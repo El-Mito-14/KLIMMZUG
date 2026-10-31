@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Klimmzug-Training</title>
+<style>
+:root{--ink:#2e2e30;--mut:#6b6b70;--red:#d32f2f;--line:#e4e4e7;--g:#2e9e4f;--o:#f29a1f;color-scheme:light;padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#fff;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
+main{flex:1;overflow-y:auto;padding:20px 20px 12px;display:flex;flex-direction:column}
+nav{display:flex;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;padding:15px;background:none;border:0;border-top:3px solid transparent;font-size:16px;font-weight:600;color:var(--mut)}
+nav button.on{color:var(--red);border-top-color:var(--red)}
+h1{font-size:26px;margin:0 0 16px}h2{font-size:18px;margin:18px 0 8px}
+label{display:block;font-size:14px;color:var(--mut);margin-bottom:14px}
+input{display:block;width:100%;margin-top:6px;padding:13px;font-size:18px;border:1.5px solid var(--line);border-radius:10px;color:var(--ink)}
+input:focus{outline:none;border-color:var(--red)}
+.btn{width:100%;padding:16px;border:0;border-radius:12px;background:var(--red);color:#fff;font-size:18px;font-weight:700;margin-top:12px}
+.btn.alt{background:var(--ink)}.btn.ghost{background:none;color:var(--mut);font-size:15px;font-weight:600}
+.sub{text-align:center;color:var(--mut);font-size:15px}.big{text-align:center;font-size:24px;font-weight:700;margin:6px 0}
+.rw{position:relative;width:min(78vw,300px);margin:12px auto}.rw svg{width:100%;display:block}
+.bgc{fill:none;stroke:#efefef;stroke-width:14}.fg{fill:none;stroke:var(--red);stroke-width:14;stroke-dasharray:754 754}
+.tm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:700;font-variant-numeric:tabular-nums}
+.rate{margin-top:auto;padding-top:14px}.rate p{margin:0 0 8px;font-size:14px;color:var(--mut);text-align:center}
+.cells{display:flex;gap:4px}.cells button,.c{flex:1;height:38px;border-radius:7px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:600;color:var(--ink);padding:0}
+.c{display:flex;align-items:center;justify-content:center;height:26px;font-size:12px}
+.g{background:var(--g)!important;border-color:var(--g)!important;color:#fff!important}.o{background:var(--o)!important;border-color:var(--o)!important;color:#fff!important}.r{background:var(--red)!important;border-color:var(--red)!important;color:#fff!important}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.row b{width:150px;font-size:14px;flex:none}
+ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);font-size:17px}
+.card{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.kc{font-size:34px;font-weight:800;color:var(--red)}.mut{color:var(--mut);font-size:13px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}.cal .h{font-size:12px;color:var(--mut);padding:4px 0}
+.d{aspect-ratio:1;border:0;background:none;border-radius:10px;font-size:15px;color:var(--ink);position:relative;padding:0}
+.d.t:after{content:"";position:absolute;left:50%;bottom:6px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--red)}
+.d.s{background:var(--ink);color:#fff}.d.n{outline:1.5px solid var(--red)}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.mh button{border:0;background:none;font-size:28px;color:var(--red);padding:4px 14px}
+</style><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head><body>
+<main id="m"></main>
+<nav><button id="n1" onclick="go('train')">Training</button><button id="n2" onclick="go('cal')">Kalender</button></nav>
+<script>
+const GRIPS=["","Standard","Handtuch (eng)","Parallel","Handtuch (breit)","Bizeps","Diagonal (Standard)","Diagonal (Bizeps)"];
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const $=s=>document.querySelector(s);
+let tab='train',S={phase:'setup'},timer=null,ac=null,wl=null,sel=null;
+let cfg=ls.get('kt_cfg',{w:'',x:'',rope:3,set:4});
+const now=new Date();let cal={y:now.getFullYear(),m:now.getMonth()};
+const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function go(t){tab=t;render()}
+function beep(){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.3,ac.currentTime);o.start();o.stop(ac.currentTime+.5)}catch(e){}try{navigator.vibrate&&navigator.vibrate([250,120,250])}catch(e){}}
+function tick(){const rem=Math.max(0,S.end-Date.now()),f=rem/S.dur,r=$('#ring'),t=$('#time');
+ if(r)r.style.strokeDasharray=(f*753.98).toFixed(1)+' 754';
+ if(t){const s=Math.ceil(rem/1000);t.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}return rem}
+function startTimer(min,onEnd){clearInterval(timer);S.dur=min*60000;S.end=Date.now()+S.dur;S.onEnd=onEnd;
+ timer=setInterval(()=>{if(tick()<=0){clearInterval(timer);beep();S.onEnd()}},100);tick()}
+function skip(){clearInterval(timer);S.onEnd()}
+function ring(){return '<div class="rw"><svg viewBox="0 0 280 280"><circle class="bgc" cx="140" cy="140" r="120"/><circle id="ring" class="fg" cx="140" cy="140" r="120" transform="rotate(-90 140 140)"/></svg><div id="time" class="tm">0:00</div></div>'}
+function start(){
+ const w=parseFloat($('#w').value.replace(',','.'));
+ if(!(w>0)){$('#msg').textContent='Bitte Körpergewicht eingeben.';return}
+ const num=(id,d)=>{const v=parseFloat($(id).value.replace(',','.'));return v>0?v:d};
+ const x=parseFloat($('#x').value.replace(',','.'))||0;
+ cfg={w,x,rope:num('#rope',3),set:num('#set',4)};ls.set('kt_cfg',cfg);
+ try{ac=ac||new AudioContext()}catch(e){}
+ try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>wl=l).catch(()=>{})}catch(e){}
+ S={phase:'warm',cfg,order:null,i:0,R:[],push:0};
+ startTimer(cfg.rope,()=>{S.phase='order';render()});render()}
+function cancel(){clearInterval(timer);try{wl&&wl.release()}catch(e){}S={phase:'setup'};render()}
+function gen(){const a=[1,2,3,4,5,6,7];for(let i=6;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}S.order=a;render()}
+function runSet(){S.phase='set';startTimer(S.cfg.set,()=>{if(S.i<6){S.i++;runSet()}else{S.phase='push';render()}});render()}
+function getR(i){return S.R[i]||(S.R[i]={cells:Array(10).fill(null),c:0,p:0,done:false})}
+function rate(i,n){const r=getR(i);if(n<=r.p)return;r.c++;const col=['g','o','r'][r.c-1];
+ for(let k=r.p;k<n;k++)r.cells[k]=col;r.p=n;
+ if(n===10||r.c===3){for(let k=r.p;k<10;k++)r.cells[k]='r';r.done=true}render()}
+function rbar(i){const r=getR(i);if(r.done)return'';
+ const hint=['Sauber geschafft (grün)','Gerade so geschafft (orange)','Nicht geschafft (rot)'][r.c];
+ let h='<div class="rate"><p>Satz '+(i+1)+' – '+GRIPS[S.order[i]]+': bis wohin? '+hint+'</p><div class="cells">';
+ for(let n=1;n<=10;n++)h+='<button class="'+(r.cells[n-1]||'')+'" onclick="rate('+i+','+n+')">'+n+'</button>';
+ return h+'</div></div>'}
+function finishPush(){S.push=parseInt($('#pr').value)||0;S.phase='cool';startTimer(S.cfg.rope,finish);render()}
+function reps(cells){return cells.filter(c=>c==='g'||c==='o').length}
+function finish(){clearInterval(timer);try{wl&&wl.release()}catch(e){}
+ const c=S.cfg,pull=S.order.map((g,i)=>reps(getR(i).cells));const pr=pull.reduce((a,b)=>a+b,0);
+ const kRope=11*c.w*(2*c.rope/60),kPull=pr*(c.w+c.x)*0.00469,kPush=S.push*(0.64*c.w+c.x)*0.003752;
+ const ses={id:Date.now(),date:key(new Date()),w:c.w,x:c.x,rope:c.rope,order:S.order,ratings:S.order.map((g,i)=>getR(i).cells),push:S.push,pull:pr,
+  kRope:Math.round(kRope),kPull:Math.round(kPull),kPush:Math.round(kPush),kcal:Math.round(kRope+kPull+kPush)};
+ const all=ls.get('kt_sessions',[]);all.push(ses);ls.set('kt_sessions',all);S={phase:'done',ses};render()}
+function summary(s){
+ let h='<div class="card"><b>'+s.date.split('-').reverse().join('.')+'</b><div class="mut">Körpergewicht '+s.w+' kg · Zusatzgewicht '+s.x+' kg</div></div><h2>Klimmzüge</h2>';
+ s.order.forEach((g,i)=>{h+='<div class="row"><b>'+(i+1)+'. '+GRIPS[g]+'</b><div class="cells" style="flex:1">'+s.ratings[i].map((c,k)=>'<div class="c '+(c||'')+'">'+(k+1)+'</div>').join('')+'</div></div>'});
+ h+='<div class="mut">Wiederholungen gesamt: '+s.pull+' (grün + orange)</div><h2>Liegestütze</h2><div class="big" style="text-align:left">'+s.push+' Wiederholungen</div>';
+ h+='<h2>Kalorienverbrauch (Schätzung)</h2><div class="card"><div class="kc">'+s.kcal+' kcal</div><div class="mut">Seilspringen (ohne Zusatzgewicht) '+s.kRope+' · Klimmzüge '+s.kPull+' · Liegestütze '+s.kPush+'</div></div>';
+ return h}
+function view(){
+ const p=S.phase;
+ if(p==='setup')return '<h1>Training</h1><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
+ if(p==='warm'||p==='cool')return '<h1>'+(p==='warm'?'Warm-up':'Abschluss')+'</h1><div class="sub">Seilspringen</div>'+ring()+'<button class="btn ghost" onclick="skip()">Überspringen</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>';
+ if(p==='order'){
+  if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für 7 Sätze</div><button class="btn" style="margin-top:auto" onclick="gen()">Reihenfolge generieren</button>';
+  return '<h1>Reihenfolge</h1><ol>'+S.order.map(g=>'<li>'+GRIPS[g]+'</li>').join('')+'</ol><button class="btn alt" onclick="gen()">Neu würfeln</button><button class="btn" style="margin-top:auto" onclick="runSet()">Training starten</button>'}
+ if(p==='set')return '<div class="sub">Satz '+(S.i+1)+' von 7</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(S.i>0?rbar(S.i-1):'');
+ if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" type="number" inputmode="numeric" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(6);
+ if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
+function calView(){
+ const all=ls.get('kt_sessions',[]),days=new Set(all.map(s=>s.date)),first=new Date(cal.y,cal.m,1),off=(first.getDay()+6)%7,len=new Date(cal.y,cal.m+1,0).getDate();
+ const mn=first.toLocaleDateString('de-DE',{month:'long',year:'numeric'}),today=key(new Date());
+ let h='<h1>Kalender</h1><div class="mh"><button onclick="mv(-1)">‹</button><b style="font-size:18px">'+mn+'</b><button onclick="mv(1)">›</button></div><div class="cal">';
+ ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d=>h+='<div class="h">'+d+'</div>');
+ for(let i=0;i<off;i++)h+='<div></div>';
+ for(let d=1;d<=len;d++){const k=cal.y+'-'+String(cal.m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+  h+='<button class="d'+(days.has(k)?' t':'')+(sel===k?' s':'')+(k===today?' n':'')+'" onclick="pick(\''+k+'\')">'+d+'</button>'}
+ h+='</div>';
+ if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(summary).join('<hr>'):'<p class="sub" style="margin-top:20px">Kein Training an diesem Tag.</p>'}
+ else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit rotem Punkt für die Auswertung.</p>';
+ return h}
+function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
+function pick(k){sel=sel===k?null:k;render()}
+function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';
+ const m=$('#m'),keep=m.scrollTop;m.innerHTML=tab==='train'?view():calView();m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
+render();
+</script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
+</body></html>
