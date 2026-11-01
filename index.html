@@ -41,6 +41,13 @@ ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);fon
 #hm{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #0007;background:var(--red);pointer-events:none}
 .hc{position:absolute;inset:22%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none}
 .pr{width:54px;height:54px;border-radius:50%;border:7px solid var(--red)}.pl{background:var(--red);color:#fff;font-weight:700;font-size:14px;padding:8px 18px;border-radius:20px}
+.gp{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:13px 4px;font-size:17px;color:var(--ink)}
+.gp.x{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:3px;color:var(--mut)}
+.hero{background:var(--red);color:#fff;border-radius:18px;padding:18px;text-align:center;margin-bottom:12px}.hero div:first-child,.hero div:last-child{opacity:.85;font-size:13px}.hk{font-size:46px;font-weight:800;line-height:1.1}.hk small{font-size:18px;font-weight:600}
+.sts{display:flex;gap:8px;margin-bottom:6px}.st{flex:1;border:1.5px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center}.st b{display:block;font-size:19px}.st span{font-size:12px;color:var(--mut)}
+.sec{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:20px 0 8px}
+.sc{border:1.5px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}.sh{display:flex;align-items:center;gap:10px;margin-bottom:8px}.nb{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.kr{display:flex;justify-content:space-between;font-size:14px;margin-top:6px}.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--red)}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -76,8 +83,8 @@ function start(){
  S={phase:'warm',cfg,order:null,i:0,R:[],push:0};
  startTimer(cfg.rope,()=>{S.phase='order';render()});render()}
 function cancel(){clearInterval(timer);try{wl&&wl.release()}catch(e){}S={phase:'setup'};render()}
-function gen(){const a=[1,2,3,4,5,6,7];for(let i=6;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}S.order=a;render()}
-function runSet(){S.phase='set';startTimer(S.cfg.set,()=>{if(S.i<6){S.i++;runSet()}else{S.phase='push';render()}});render()}
+function gen(){const a=[1,2,3,4,5,6,7].filter(k=>!off.includes(k));if(!a.length)return;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}S.order=a;render()}
+function runSet(){S.phase='set';startTimer(S.cfg.set,()=>{if(S.i<S.order.length-1){S.i++;runSet()}else{S.phase='push';render()}});render()}
 function getR(i){return S.R[i]||(S.R[i]={cells:Array(10).fill(null),c:0,p:0,done:false})}
 function rate(i,n){const r=getR(i);if(n<=r.p)return;r.c++;const col=['g','o','r'][r.c-1];
  for(let k=r.p;k<n;k++)r.cells[k]=col;r.p=n;
@@ -93,21 +100,21 @@ function calc(s){s.pull=s.ratings.reduce((a,r)=>a+reps(r),0);s.kRope=Math.round(
 function finish(){clearInterval(timer);try{wl&&wl.release()}catch(e){}
  const c=S.cfg,ses={id:Date.now(),date:key(new Date()),w:c.w,x:c.x,rope:c.rope,order:S.order,ratings:S.order.map((g,i)=>getR(i).cells),push:S.push};calc(ses);
  const all=ls.get('kt_sessions',[]);all.push(ses);ls.set('kt_sessions',all);S={phase:'done',ses};render()}
-function summary(s){
- let h='<div class="card"><b>'+s.date.split('-').reverse().join('.')+'</b><div class="mut">Körpergewicht '+s.w+' kg · Zusatzgewicht '+s.x+' kg</div></div><h2>Klimmzüge</h2>';
- s.order.forEach((g,i)=>{h+='<div class="row"><b>'+(i+1)+'. '+GRIPS[g]+'</b><div class="cells" style="flex:1">'+s.ratings[i].map((c,k)=>'<div class="c '+(c||'')+'">'+(k+1)+'</div>').join('')+'</div></div>'});
- h+='<div class="mut">Wiederholungen gesamt: '+s.pull+' (grün + orange)</div><h2>Liegestütze</h2><div class="big" style="text-align:left">'+s.push+' Wiederholungen</div>';
- h+='<h2>Kalorienverbrauch (Schätzung)</h2><div class="card"><div class="kc">'+s.kcal+' kcal</div><div class="mut">Seilspringen (ohne Zusatzgewicht) '+s.kRope+' · Klimmzüge '+s.kPull+' · Liegestütze '+s.kPush+'</div></div>';
+function summary(s){const d=s.date.split('-').reverse().join('.'),tot=s.kcal||1,pc=v=>Math.round(v/tot*100),t=(v,l)=>'<div class="st"><b>'+v+'</b><span>'+l+'</span></div>';
+ let h='<div class="hero"><div>'+d+'</div><div class="hk">'+s.kcal+'<small> kcal</small></div><div>geschätzter Verbrauch</div></div>';
+ h+='<div class="sts">'+t(s.pull,'Klimmzüge')+t(s.push,'Liegestütze')+t(s.w+(s.x?' +'+s.x:'')+' kg','Gewicht')+'</div><div class="sec">Klimmzug-Sätze</div>';
+ s.order.forEach((g,i)=>{const c=s.ratings[i];h+='<div class="sc"><div class="sh"><span class="nb">'+(i+1)+'</span><b>'+GRIPS[g]+'</b><span class="mut" style="margin-left:auto">'+reps(c)+' / 10</span></div><div class="cells">'+c.map((z,k)=>'<div class="c '+(z||'')+'">'+(k+1)+'</div>').join('')+'</div></div>'});
+ h+='<div class="sec">Kalorien</div><div class="sc">'+[['Seilspringen',s.kRope],['Klimmzüge',s.kPull],['Liegestütze',s.kPush]].map(a=>'<div class="kr"><span>'+a[0]+'</span><b>'+a[1]+' kcal</b></div><div class="bar"><i style="width:'+pc(a[1])+'%"></i></div>').join('')+'</div>';
  return h}
 function view(){
  const p=S.phase;if(p==='splash')return splash();
  if(p==='setup')return '<div class="mh"><h1 style="margin:0">Training</h1><button onclick="go(\'set\')" style="color:var(--ink);font-size:24px" aria-label="Einstellungen">⚙</button></div><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
  if(p==='warm'||p==='cool')return '<h1>'+(p==='warm'?'Warm-up':'Abschluss')+'</h1><div class="sub">Seilspringen</div>'+ring()+'<button class="btn ghost" onclick="skip()">Überspringen</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>';
  if(p==='order'){
-  if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für 7 Sätze</div><button class="btn" style="margin-top:auto" onclick="gen()">Reihenfolge generieren</button>';
+  if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für '+(7-off.length)+' Sätze</div>'+gripPanel()+'<button class="btn alt" style="margin-top:auto" onclick="showG=!showG;render()">Griffe anpassen</button><button class="btn" onclick="gen()">Reihenfolge generieren</button>';
   return '<h1>Reihenfolge</h1><ol>'+S.order.map(g=>'<li>'+GRIPS[g]+'</li>').join('')+'</ol><button class="btn alt" onclick="gen()">Neu würfeln</button><button class="btn" style="margin-top:auto" onclick="runSet()">Training starten</button>'}
- if(p==='set')return '<div class="sub">Satz '+(S.i+1)+' von 7</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(S.i>0?rbar(S.i-1):'');
- if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" type="number" inputmode="numeric" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(6);
+ if(p==='set')return '<div class="sub">Satz '+(S.i+1)+' von '+S.order.length+'</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(S.i>0?rbar(S.i-1):'');
+ if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" type="number" inputmode="numeric" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(S.order.length-1);
  if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
 function calView(){if(ed)return editView();
  const all=ls.get('kt_sessions',[]),days=new Set(all.map(s=>s.date)),first=new Date(cal.y,cal.m,1),off=(first.getDay()+6)%7,len=new Date(cal.y,cal.m+1,0).getDate();
@@ -119,7 +126,7 @@ function calView(){if(ed)return editView();
   h+='<button class="d'+(days.has(k)?' t':'')+(sel===k?' s':'')+(k===today?' n':'')+'" onclick="pick(\''+k+'\')">'+d+'</button>'}
  h+='</div>';
  if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(s=>summary(s)+'<button class="btn alt" onclick="edit('+s.id+')">Bearbeiten</button><button class="btn ghost" onclick="del('+s.id+')">Löschen</button>').join('<hr>'):'<p class="sub" style="margin-top:20px">Kein Training an diesem Tag.</p>'}
- else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit rotem Punkt für die Auswertung.</p>';
+ else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit Punkt für die Auswertung.</p>';
  return h}
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
@@ -159,6 +166,9 @@ function anaView(){const all=ls.get('kt_sessions',[]),pre=cal.y+'-'+String(cal.m
  let gr='';for(let k=1;k<=7;k++){let a=0,b=0,c=0;L.forEach(s=>s.order.forEach((x,i)=>{if(x===k)s.ratings[i].forEach(z=>{if(z==='g')a++;else if(z==='o')b++;else if(z==='r')c++})}));const t=a+b+c;if(!t)continue;
   gr+='<div style="margin:8px 0"><div class="mut">'+GRIPS[k]+' · '+Math.round(a/t*100)+' % sauber</div><div style="display:flex;height:14px;border-radius:7px;overflow:hidden"><i class="g" style="flex:'+a+'"></i><i class="o" style="flex:'+b+'"></i><i class="r" style="flex:'+c+'"></i></div></div>'}
  return h+ch('Leistung pro Griff',gr+'<div class="mut">grün sauber · orange gerade so · rot nicht geschafft</div>')+ch('Körpergewicht (kg)',line(L.map(s=>({l:lab(s),v:s.w}))))}
+let off=ls.get('kt_off',[]),showG=false;
+function tg(k){const i=off.indexOf(k);if(i>=0)off.splice(i,1);else if(off.length<6)off.push(k);ls.set('kt_off',off);render()}
+function gripPanel(){return showG?'<div class="card" style="margin-top:14px">'+[1,2,3,4,5,6,7].map(k=>'<button class="gp'+(off.includes(k)?' x':'')+'" onclick="tg('+k+')">'+GRIPS[k]+'</button>').join('')+'<div class="mut" style="margin-top:8px">Antippen zum Streichen oder Zurückholen</div></div>':''}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
