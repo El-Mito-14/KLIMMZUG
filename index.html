@@ -3,28 +3,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Klimmzug-Training</title>
 <style>
-:root{--ink:#2e2e30;--mut:#6b6b70;--red:#d32f2f;--line:#e4e4e7;--g:#2e9e4f;--o:#f29a1f;color-scheme:light;padding-top:env(safe-area-inset-top,0px)}
+:root{--bg:#fff;--ink:#2e2e30;--mut:#6b6b70;--red:#d32f2f;--line:#e4e4e7;--g:#2e9e4f;--o:#f29a1f;color-scheme:light;padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{background:#fff;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
 main{flex:1;overflow-y:auto;padding:20px 20px 12px;display:flex;flex-direction:column}
 nav{display:flex;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 nav button{flex:1;padding:15px;background:none;border:0;border-top:3px solid transparent;font-size:16px;font-weight:600;color:var(--mut)}
 nav button.on{color:var(--red);border-top-color:var(--red)}
 h1{font-size:26px;margin:0 0 16px}h2{font-size:18px;margin:18px 0 8px}
 label{display:block;font-size:14px;color:var(--mut);margin-bottom:14px}
-input{display:block;width:100%;margin-top:6px;padding:13px;font-size:18px;border:1.5px solid var(--line);border-radius:10px;color:var(--ink)}
+input{display:block;width:100%;margin-top:6px;padding:13px;font-size:18px;border:1.5px solid var(--line);border-radius:10px;color:var(--ink);background:var(--bg)}
 input:focus{outline:none;border-color:var(--red)}
 .btn{width:100%;padding:16px;border:0;border-radius:12px;background:var(--red);color:#fff;font-size:18px;font-weight:700;margin-top:12px}
-.btn.alt{background:var(--ink)}.btn.ghost{background:none;color:var(--mut);font-size:15px;font-weight:600}
+.btn.alt{background:var(--ink);color:var(--bg)}.btn.ghost{background:none;color:var(--mut);font-size:15px;font-weight:600}
 .sub{text-align:center;color:var(--mut);font-size:15px}.big{text-align:center;font-size:24px;font-weight:700;margin:6px 0}
 .rw{position:relative;width:min(78vw,300px);margin:12px auto}.rw svg{width:100%;display:block}
-.bgc{fill:none;stroke:#efefef;stroke-width:14}.fg{fill:none;stroke:var(--red);stroke-width:14;stroke-dasharray:754 754}
-.tm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:700;font-variant-numeric:tabular-nums}
+.bgc{fill:none;stroke:var(--line);stroke-width:14}.fg{fill:none;stroke:var(--red);stroke-width:14;stroke-dasharray:754 754}
+.tm{color:var(--red);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:700;font-variant-numeric:tabular-nums}
 .rate{margin-top:auto;padding-top:14px}.rate p{margin:0 0 8px;font-size:14px;color:var(--mut);text-align:center}
-.cells{display:flex;gap:4px}.cells button,.c{flex:1;height:38px;border-radius:7px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:600;color:var(--ink);padding:0}
+.cells{display:flex;gap:4px}.cells button,.c{flex:1;height:38px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);font-size:14px;font-weight:600;color:var(--ink);padding:0}
 .c{display:flex;align-items:center;justify-content:center;height:26px;font-size:12px}
-.g{background:var(--g)!important;border-color:var(--g)!important;color:#fff!important}.o{background:var(--o)!important;border-color:var(--o)!important;color:#fff!important}.r{background:var(--red)!important;border-color:var(--red)!important;color:#fff!important}
+.g{background:var(--g)!important;border-color:var(--g)!important;color:#fff!important}.o{background:var(--o)!important;border-color:var(--o)!important;color:#fff!important}.r{background:#d32f2f!important;border-color:#d32f2f!important;color:#fff!important}
 .row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.row b{width:150px;font-size:14px;flex:none}
 ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);font-size:17px}
 .card{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
@@ -32,20 +32,27 @@ ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);fon
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}.cal .h{font-size:12px;color:var(--mut);padding:4px 0}
 .d{aspect-ratio:1;border:0;background:none;border-radius:10px;font-size:15px;color:var(--ink);position:relative;padding:0}
 .d.t:after{content:"";position:absolute;left:50%;bottom:6px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--red)}
-.d.s{background:var(--ink);color:#fff}.d.n{outline:1.5px solid var(--red)}
+.d.s{background:var(--ink);color:var(--bg)}.d.n{outline:1.5px solid var(--red)}
 .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.mh button{border:0;background:none;font-size:28px;color:var(--red);padding:4px 14px}
+[data-theme=dark]{--bg:#2e2e30;--ink:#fff;--line:#4a4a4e;--mut:#a3a3a8}
+.hint{font-size:34px;color:var(--red);animation:up 1.2s ease-in-out infinite}@keyframes up{50%{transform:translateY(-10px)}}
+.hw{position:relative;width:min(70vw,280px);aspect-ratio:1;margin:14px auto;touch-action:none}
+.hg{position:absolute;inset:0;border-radius:50%;background:conic-gradient(hsl(0,70%,48%),hsl(60,70%,48%),hsl(120,70%,48%),hsl(180,70%,48%),hsl(240,70%,48%),hsl(300,70%,48%),hsl(360,70%,48%));-webkit-mask:radial-gradient(circle,transparent 58%,#000 59%);mask:radial-gradient(circle,transparent 58%,#000 59%)}
+#hm{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #0007;background:var(--red);pointer-events:none}
+.hc{position:absolute;inset:22%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none}
+.pr{width:54px;height:54px;border-radius:50%;border:7px solid var(--red)}.pl{background:var(--red);color:#fff;font-weight:700;font-size:14px;padding:8px 18px;border-radius:20px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 </head><body>
 <main id="m"></main>
-<nav><button id="n1" onclick="go('train')">Training</button><button id="n2" onclick="go('cal')">Kalender</button></nav>
+<nav><button id="n1" onclick="go('train')">Training</button><button id="n2" onclick="go('cal')">Kalender</button><button id="n3" onclick="go('ana')">Analyse</button></nav>
 <script>
 const GRIPS=["","Standard","Handtuch (eng)","Parallel","Handtuch (breit)","Bizeps","Diagonal (Standard)","Diagonal (Bizeps)"];
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const $=s=>document.querySelector(s);
-let tab='train',S={phase:'setup'},timer=null,ac=null,wl=null,sel=null;
+let tab='train',S={phase:'splash'},ed=null,timer=null,ac=null,wl=null,sel=null;
 let cfg=ls.get('kt_cfg',{w:'',x:'',rope:3,set:4});
 const now=new Date();let cal={y:now.getFullYear(),m:now.getMonth()};
 const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -76,17 +83,15 @@ function rate(i,n){const r=getR(i);if(n<=r.p)return;r.c++;const col=['g','o','r'
  for(let k=r.p;k<n;k++)r.cells[k]=col;r.p=n;
  if(n===10||r.c===3){for(let k=r.p;k<10;k++)r.cells[k]='r';r.done=true}render()}
 function rbar(i){const r=getR(i);if(r.done)return'';
- const hint=['Sauber geschafft (grün)','Gerade so geschafft (orange)','Nicht geschafft (rot)'][r.c];
- let h='<div class="rate"><p>Satz '+(i+1)+' – '+GRIPS[S.order[i]]+': bis wohin? '+hint+'</p><div class="cells">';
+ const hint=['sauber geschafft','gerade so geschafft','nicht geschafft'][r.c];
+ let h='<div class="rate"><p>Satz '+(i+1)+' - '+hint+'</p><div class="cells">';
  for(let n=1;n<=10;n++)h+='<button class="'+(r.cells[n-1]||'')+'" onclick="rate('+i+','+n+')">'+n+'</button>';
  return h+'</div></div>'}
 function finishPush(){S.push=parseInt($('#pr').value)||0;S.phase='cool';startTimer(S.cfg.rope,finish);render()}
 function reps(cells){return cells.filter(c=>c==='g'||c==='o').length}
+function calc(s){s.pull=s.ratings.reduce((a,r)=>a+reps(r),0);s.kRope=Math.round(11*s.w*(2*s.rope/60));s.kPull=Math.round(s.pull*(s.w+s.x)*0.00469);s.kPush=Math.round(s.push*(0.64*s.w+s.x)*0.003752);s.kcal=s.kRope+s.kPull+s.kPush}
 function finish(){clearInterval(timer);try{wl&&wl.release()}catch(e){}
- const c=S.cfg,pull=S.order.map((g,i)=>reps(getR(i).cells));const pr=pull.reduce((a,b)=>a+b,0);
- const kRope=11*c.w*(2*c.rope/60),kPull=pr*(c.w+c.x)*0.00469,kPush=S.push*(0.64*c.w+c.x)*0.003752;
- const ses={id:Date.now(),date:key(new Date()),w:c.w,x:c.x,rope:c.rope,order:S.order,ratings:S.order.map((g,i)=>getR(i).cells),push:S.push,pull:pr,
-  kRope:Math.round(kRope),kPull:Math.round(kPull),kPush:Math.round(kPush),kcal:Math.round(kRope+kPull+kPush)};
+ const c=S.cfg,ses={id:Date.now(),date:key(new Date()),w:c.w,x:c.x,rope:c.rope,order:S.order,ratings:S.order.map((g,i)=>getR(i).cells),push:S.push};calc(ses);
  const all=ls.get('kt_sessions',[]);all.push(ses);ls.set('kt_sessions',all);S={phase:'done',ses};render()}
 function summary(s){
  let h='<div class="card"><b>'+s.date.split('-').reverse().join('.')+'</b><div class="mut">Körpergewicht '+s.w+' kg · Zusatzgewicht '+s.x+' kg</div></div><h2>Klimmzüge</h2>';
@@ -95,8 +100,8 @@ function summary(s){
  h+='<h2>Kalorienverbrauch (Schätzung)</h2><div class="card"><div class="kc">'+s.kcal+' kcal</div><div class="mut">Seilspringen (ohne Zusatzgewicht) '+s.kRope+' · Klimmzüge '+s.kPull+' · Liegestütze '+s.kPush+'</div></div>';
  return h}
 function view(){
- const p=S.phase;
- if(p==='setup')return '<h1>Training</h1><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
+ const p=S.phase;if(p==='splash')return splash();
+ if(p==='setup')return '<div class="mh"><h1 style="margin:0">Training</h1><button onclick="go(\'set\')" style="color:var(--ink);font-size:24px" aria-label="Einstellungen">⚙</button></div><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
  if(p==='warm'||p==='cool')return '<h1>'+(p==='warm'?'Warm-up':'Abschluss')+'</h1><div class="sub">Seilspringen</div>'+ring()+'<button class="btn ghost" onclick="skip()">Überspringen</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>';
  if(p==='order'){
   if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für 7 Sätze</div><button class="btn" style="margin-top:auto" onclick="gen()">Reihenfolge generieren</button>';
@@ -104,7 +109,7 @@ function view(){
  if(p==='set')return '<div class="sub">Satz '+(S.i+1)+' von 7</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(S.i>0?rbar(S.i-1):'');
  if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" type="number" inputmode="numeric" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(6);
  if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
-function calView(){
+function calView(){if(ed)return editView();
  const all=ls.get('kt_sessions',[]),days=new Set(all.map(s=>s.date)),first=new Date(cal.y,cal.m,1),off=(first.getDay()+6)%7,len=new Date(cal.y,cal.m+1,0).getDate();
  const mn=first.toLocaleDateString('de-DE',{month:'long',year:'numeric'}),today=key(new Date());
  let h='<h1>Kalender</h1><div class="mh"><button onclick="mv(-1)">‹</button><b style="font-size:18px">'+mn+'</b><button onclick="mv(1)">›</button></div><div class="cal">';
@@ -113,13 +118,47 @@ function calView(){
  for(let d=1;d<=len;d++){const k=cal.y+'-'+String(cal.m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
   h+='<button class="d'+(days.has(k)?' t':'')+(sel===k?' s':'')+(k===today?' n':'')+'" onclick="pick(\''+k+'\')">'+d+'</button>'}
  h+='</div>';
- if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(summary).join('<hr>'):'<p class="sub" style="margin-top:20px">Kein Training an diesem Tag.</p>'}
+ if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(s=>summary(s)+'<button class="btn alt" onclick="edit('+s.id+')">Bearbeiten</button><button class="btn ghost" onclick="del('+s.id+')">Löschen</button>').join('<hr>'):'<p class="sub" style="margin-top:20px">Kein Training an diesem Tag.</p>'}
  else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit rotem Punkt für die Auswertung.</p>';
  return h}
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
-function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';
- const m=$('#m'),keep=m.scrollTop;m.innerHTML=tab==='train'?view():calView();m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
-render();
+function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';
+ const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
+let ui=ls.get('kt_ui',{dark:false,hue:0});
+function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
+function fig(p){const sy=112-p*78,o=26*p,ey=(30+sy)/2,s='stroke="var(--ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+ return '<svg viewBox="0 0 220 215" width="100%" style="max-height:40vh"><line x1="30" y1="30" x2="190" y2="30" stroke="var(--red)" stroke-width="8" stroke-linecap="round"/><g '+s+'><polyline points="85,30 '+(92.5-o)+','+ey+' 100,'+sy+'"/><polyline points="135,30 '+(127.5+o)+','+ey+' 120,'+sy+'"/><line x1="110" y1="'+sy+'" x2="110" y2="'+(sy+52)+'"/><polyline points="103,'+(sy+105)+' 110,'+(sy+52)+' 117,'+(sy+105)+'"/><circle cx="110" cy="'+(sy-17)+'" r="13" fill="var(--bg)"/></g></svg>'}
+function splash(){return '<div id="sp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><h1 style="margin:0 0 4px">Klimmzug-Training</h1><div class="sub">Zieh dich hoch, um zu starten</div><div id="fg" style="width:100%;max-width:300px;margin:18px 0"></div><div class="hint">↑</div><div class="sub">Von unten nach oben wischen</div></div>'}
+function initSplash(){const a=$('#sp'),f=$('#fg');let y0=null,p=0,done=0;const set=v=>{p=v;f.innerHTML=fig(p)};set(0);
+ a.onpointerdown=e=>{a.setPointerCapture(e.pointerId);y0=e.clientY};
+ a.onpointermove=e=>{if(y0===null||done)return;set(Math.max(0,Math.min(1,(y0-e.clientY)/230)));if(p>=1){done=1;setTimeout(()=>{S={phase:'setup'};render()},300)}};
+ a.onpointerup=a.onpointercancel=()=>{y0=null;if(done)return;const t=setInterval(()=>{if(done||p<=0.02){clearInterval(t);if(!done)set(0);return}set(p*.8)},16)}}
+function setView(){return '<h1>Einstellungen</h1><div class="card"><b>Darstellung</b><button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button></div><div class="card"><b>Akzentfarbe</b><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><div class="pl">Training</div></div></div></div><button class="btn" onclick="go(\'train\')">Fertig</button>'}
+function initRing(){const w=$('#hw'),mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
+ const mvr=e=>{const b=w.getBoundingClientRect();ui.hue=Math.round((Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI+360)%360);applyUI();mk()};
+ w.onpointerdown=e=>{w.setPointerCapture(e.pointerId);d=1;mvr(e)};w.onpointermove=e=>{if(d)mvr(e)};w.onpointerup=()=>d=0}
+function del(id){if(!confirm('Training wirklich löschen?'))return;ls.set('kt_sessions',ls.get('kt_sessions',[]).filter(s=>s.id!==id));render()}
+function edit(id){ed=JSON.parse(JSON.stringify(ls.get('kt_sessions',[]).find(s=>s.id===id)));render()}
+function cyc(i,k){const c=ed.ratings[i],m={g:'o',o:'r',r:null};c[k]=c[k]?m[c[k]]:'g';render()}
+function editView(){let h='<h1>Training bearbeiten</h1>'+[['w','Körpergewicht (kg)'],['x','Zusatzgewicht (kg)'],['rope','Seilspringen je Runde (Min)'],['push','Liegestütze (Wdh.)']].map(f=>'<label>'+f[1]+'<input inputmode="decimal" value="'+ed[f[0]]+'" oninput="ed.'+f[0]+'=parseFloat(this.value.replace(\',\',\'.\'))||0"></label>').join('')+'<h2>Sätze (Felder antippen zum Ändern)</h2>';
+ ed.order.forEach((g,i)=>{h+='<div class="row"><b>'+(i+1)+'. '+GRIPS[g]+'</b><div class="cells" style="flex:1">'+ed.ratings[i].map((c,k)=>'<button class="'+(c||'')+'" style="height:26px;font-size:12px" onclick="cyc('+i+','+k+')">'+(k+1)+'</button>').join('')+'</div></div>'});
+ return h+'<button class="btn" onclick="saveEd()">Speichern</button><button class="btn ghost" onclick="ed=null;render()">Abbrechen</button>'}
+function saveEd(){calc(ed);const a=ls.get('kt_sessions',[]);a[a.findIndex(s=>s.id===ed.id)]=ed;ls.set('kt_sessions',a);ed=null;render()}
+function bars(a){const mx=Math.max(...a.map(x=>x.v),1),w=300/a.length,bw=Math.min(28,w*.7);
+ return '<svg viewBox="0 0 300 130" width="100%">'+a.map((x,i)=>{const h=x.v/mx*85,cx=i*w+w/2;return '<rect x="'+(cx-bw/2)+'" y="'+(105-h)+'" width="'+bw+'" height="'+h+'" rx="3" fill="var(--red)"/><text x="'+cx+'" y="'+(100-h)+'" font-size="10" text-anchor="middle" fill="var(--ink)">'+x.v+'</text><text x="'+cx+'" y="122" font-size="10" text-anchor="middle" fill="var(--mut)">'+x.l+'</text>'}).join('')+'</svg>'}
+function line(a){const v=a.map(x=>x.v),mn=Math.min(...v),sp=(Math.max(...v)-mn)||1,w=270/Math.max(a.length-1,1),P=a.map((x,i)=>[a.length>1?15+i*w:150,95-(x.v-mn)/sp*60]);
+ return '<svg viewBox="0 0 300 130" width="100%"><polyline fill="none" stroke="var(--red)" stroke-width="2.5" points="'+P.map(p=>p.join(',')).join(' ')+'"/>'+P.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--red)"/><text x="'+p[0]+'" y="'+(p[1]-8)+'" font-size="10" text-anchor="middle" fill="var(--ink)">'+a[i].v+'</text><text x="'+p[0]+'" y="124" font-size="10" text-anchor="middle" fill="var(--mut)">'+a[i].l+'</text>').join('')+'</svg>'}
+function anaView(){const all=ls.get('kt_sessions',[]),pre=cal.y+'-'+String(cal.m+1).padStart(2,'0')+'-',L=all.filter(s=>s.date.startsWith(pre)).sort((a,b)=>a.id-b.id),mn=new Date(cal.y,cal.m,1).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
+ let h='<h1>Analyse</h1><div class="mh"><button onclick="mv(-1)">‹</button><b style="font-size:18px">'+mn+'</b><button onclick="mv(1)">›</button></div>';
+ if(!L.length)return h+'<p class="sub">Keine Trainings in diesem Monat.</p>';
+ const sum=f=>L.reduce((a,s)=>a+f(s),0),cnt=c=>sum(s=>s.ratings.reduce((a,r)=>a+r.filter(x=>x===c).length,0)),G=cnt('g'),O=cnt('o'),R=cnt('r'),q=Math.round(G/(G+O+R||1)*100),lab=s=>(+s.date.slice(8))+'.';
+ const kp=(v,t)=>'<div class="card" style="flex:1;margin:0"><div class="kc" style="font-size:24px">'+v+'</div><div class="mut">'+t+'</div></div>',ch=(t,x)=>'<div class="card"><b>'+t+'</b>'+x+'</div>';
+ h+='<div style="display:flex;gap:8px;margin-bottom:8px">'+kp(L.length,'Trainings')+kp(sum(s=>s.kcal),'kcal gesamt')+'</div><div style="display:flex;gap:8px;margin-bottom:14px">'+kp(sum(s=>s.pull),'Klimmzüge')+kp(q+' %','sauber geschafft')+'</div>';
+ h+=ch('Klimmzüge pro Training',bars(L.map(s=>({l:lab(s),v:s.pull}))))+ch('Liegestütze pro Training',bars(L.map(s=>({l:lab(s),v:s.push}))))+ch('Kalorien pro Training (kcal)',bars(L.map(s=>({l:lab(s),v:s.kcal}))));
+ let gr='';for(let k=1;k<=7;k++){let a=0,b=0,c=0;L.forEach(s=>s.order.forEach((x,i)=>{if(x===k)s.ratings[i].forEach(z=>{if(z==='g')a++;else if(z==='o')b++;else if(z==='r')c++})}));const t=a+b+c;if(!t)continue;
+  gr+='<div style="margin:8px 0"><div class="mut">'+GRIPS[k]+' · '+Math.round(a/t*100)+' % sauber</div><div style="display:flex;height:14px;border-radius:7px;overflow:hidden"><i class="g" style="flex:'+a+'"></i><i class="o" style="flex:'+b+'"></i><i class="r" style="flex:'+c+'"></i></div></div>'}
+ return h+ch('Leistung pro Griff',gr+'<div class="mut">grün sauber · orange gerade so · rot nicht geschafft</div>')+ch('Körpergewicht (kg)',line(L.map(s=>({l:lab(s),v:s.w}))))}
+applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
