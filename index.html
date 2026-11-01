@@ -48,11 +48,14 @@ ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);fon
 .sec{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:20px 0 8px}
 .sc{border:1.5px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}.sh{display:flex;align-items:center;gap:10px;margin-bottom:8px}.nb{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
 .kr{display:flex;justify-content:space-between;font-size:14px;margin-top:6px}.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--red)}
+#gear{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:10px;z-index:5;width:42px;height:42px;border:0;background:none;font-size:26px;color:var(--ink);padding:0}
+main h1{padding-right:40px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 </head><body>
+<button id="gear" onclick="go('set')" aria-label="Einstellungen">⚙</button>
 <main id="m"></main>
 <nav><button id="n1" onclick="go('train')">Training</button><button id="n2" onclick="go('cal')">Kalender</button><button id="n3" onclick="go('ana')">Analyse</button></nav>
 <script>
@@ -63,7 +66,7 @@ let tab='train',S={phase:'splash'},ed=null,timer=null,ac=null,wl=null,sel=null;
 let cfg=ls.get('kt_cfg',{w:'',x:'',rope:3,set:4});
 const now=new Date();let cal={y:now.getFullYear(),m:now.getMonth()};
 const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-function go(t){tab=t;render()}
+let prev='train';function go(t){if(t==='set'&&tab!=='set')prev=tab;tab=t;render()}
 function beep(){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.3,ac.currentTime);o.start();o.stop(ac.currentTime+.5)}catch(e){}try{navigator.vibrate&&navigator.vibrate([250,120,250])}catch(e){}}
 function tick(){const rem=Math.max(0,S.end-Date.now()),f=rem/S.dur,r=$('#ring'),t=$('#time');
  if(r)r.style.strokeDasharray=(f*753.98).toFixed(1)+' 754';
@@ -108,7 +111,7 @@ function summary(s){const d=s.date.split('-').reverse().join('.'),tot=s.kcal||1,
  return h}
 function view(){
  const p=S.phase;if(p==='splash')return splash();
- if(p==='setup')return '<div class="mh"><h1 style="margin:0">Training</h1><button onclick="go(\'set\')" style="color:var(--ink);font-size:24px" aria-label="Einstellungen">⚙</button></div><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
+ if(p==='setup')return '<h1>Training</h1><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
  if(p==='warm'||p==='cool')return '<h1>'+(p==='warm'?'Warm-up':'Abschluss')+'</h1><div class="sub">Seilspringen</div>'+ring()+'<button class="btn ghost" onclick="skip()">Überspringen</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>';
  if(p==='order'){
   if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für '+(7-off.length)+' Sätze</div>'+gripPanel()+'<button class="btn alt" style="margin-top:auto" onclick="showG=!showG;render()">Griffe anpassen</button><button class="btn" onclick="gen()">Reihenfolge generieren</button>';
@@ -130,18 +133,18 @@ function calView(){if(ed)return editView();
  return h}
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
-function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';
+function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'block';
  const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
 let ui=ls.get('kt_ui',{dark:false,hue:0});
 function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
 function fig(p){const sy=112-p*78,o=26*p,ey=(30+sy)/2,s='stroke="var(--ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
  return '<svg viewBox="0 0 220 215" width="100%" style="max-height:40vh"><line x1="30" y1="30" x2="190" y2="30" stroke="var(--red)" stroke-width="8" stroke-linecap="round"/><g '+s+'><polyline points="85,30 '+(92.5-o)+','+ey+' 100,'+sy+'"/><polyline points="135,30 '+(127.5+o)+','+ey+' 120,'+sy+'"/><line x1="110" y1="'+sy+'" x2="110" y2="'+(sy+52)+'"/><polyline points="103,'+(sy+105)+' 110,'+(sy+52)+' 117,'+(sy+105)+'"/><circle cx="110" cy="'+(sy-17)+'" r="13" fill="var(--bg)"/></g></svg>'}
-function splash(){return '<div id="sp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><h1 style="margin:0 0 4px">Klimmzug-Training</h1><div class="sub">Zieh dich hoch, um zu starten</div><div id="fg" style="width:100%;max-width:300px;margin:18px 0"></div><div class="hint">↑</div><div class="sub">Von unten nach oben wischen</div></div>'}
+function splash(){return '<div id="sp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><h1 style="margin:0 0 4px;padding:0">Klimmzug-Training</h1><div class="sub">Zieh dich hoch, um zu starten</div><div id="fg" style="width:100%;max-width:300px;margin:18px 0"></div><div class="hint">↑</div><div class="sub">Von unten nach oben wischen</div></div>'}
 function initSplash(){const a=$('#sp'),f=$('#fg');let y0=null,p=0,done=0;const set=v=>{p=v;f.innerHTML=fig(p)};set(0);
  a.onpointerdown=e=>{a.setPointerCapture(e.pointerId);y0=e.clientY};
  a.onpointermove=e=>{if(y0===null||done)return;set(Math.max(0,Math.min(1,(y0-e.clientY)/230)));if(p>=1){done=1;setTimeout(()=>{S={phase:'setup'};render()},300)}};
  a.onpointerup=a.onpointercancel=()=>{y0=null;if(done)return;const t=setInterval(()=>{if(done||p<=0.02){clearInterval(t);if(!done)set(0);return}set(p*.8)},16)}}
-function setView(){return '<h1>Einstellungen</h1><div class="card"><b>Darstellung</b><button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button></div><div class="card"><b>Akzentfarbe</b><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><div class="pl">Training</div></div></div></div><button class="btn" onclick="go(\'train\')">Fertig</button>'}
+function setView(){return '<h1>Einstellungen</h1><div class="card"><b>Darstellung</b><button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button></div><div class="card"><b>Akzentfarbe</b><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><div class="pl">Training</div></div></div></div><button class="btn" onclick="go(prev)">Fertig</button>'}
 function initRing(){const w=$('#hw'),mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
  const mvr=e=>{const b=w.getBoundingClientRect();ui.hue=Math.round((Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI+360)%360);applyUI();mk()};
  w.onpointerdown=e=>{w.setPointerCapture(e.pointerId);d=1;mvr(e)};w.onpointermove=e=>{if(d)mvr(e)};w.onpointerup=()=>d=0}
