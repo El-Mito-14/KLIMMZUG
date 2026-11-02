@@ -57,6 +57,9 @@ main h1{padding-right:90px}
 .dg{background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:20px;padding:22px;width:100%;max-width:360px}
 .dg h2{margin:0 0 8px;font-size:20px}.dg p{margin:0 0 18px;color:var(--mut);font-size:15px;line-height:1.45}
 .dgb{display:flex;gap:10px}.dgb .btn{margin:0;padding:14px 8px;font-size:15px}
+.ah{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:16px 2px;font-size:18px;font-weight:700;color:var(--ink)}.ah span+span{display:inline-block;transition:transform .2s;color:var(--red);font-size:24px}
+.lr{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:12px 4px;font-size:17px;color:var(--ink)}.lr.on{color:var(--red);font-weight:700}
+.fl{width:30px;height:20px;border-radius:4px;overflow:hidden;flex:none;border:1px solid var(--line)}.fl svg{display:block;width:100%;height:100%}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -86,14 +89,14 @@ function skip(){clearInterval(timer);S.onEnd()}
 function ring(){return '<div class="rw" onclick="tp()"><svg viewBox="0 0 280 280"><circle class="bgc" cx="140" cy="140" r="120"/><circle id="ring" class="fg" cx="140" cy="140" r="120" transform="rotate(-90 140 140)"/></svg><div id="time" class="tm">0:00</div></div><div class="mut" style="text-align:center">Zeit antippen zum Pausieren</div>'}
 function start(){
  const w=parseFloat($('#w').value.replace(',','.'));
- if(!(w>0)){$('#msg').textContent='Bitte Körpergewicht eingeben.';return}
+ if(!(w>0)){$('#msg').textContent=tx('Bitte Körpergewicht eingeben.');return}
  const num=(id,d)=>{const v=parseFloat($(id).value.replace(',','.'));return v>0?v:d};
  const x=parseFloat($('#x').value.replace(',','.'))||0;
- cfg={w,x,rope:num('#rope',3),set:num('#set',4)};ls.set('kt_cfg',cfg);
+ cfg={w,x,rope:(()=>{const v=parseFloat($('#rope').value.replace(',','.'));return isNaN(v)||v<0?3:v})(),set:num('#set',4)};ls.set('kt_cfg',cfg);
  try{ac=ac||new AudioContext()}catch(e){}
  try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>wl=l).catch(()=>{})}catch(e){}
  S={phase:'warm',cfg,order:null,i:0,R:[],push:0};
- startTimer(cfg.rope,()=>{S.phase='order';render()});render()}
+ if(cfg.rope>0)startTimer(cfg.rope,()=>{S.phase='order';render()});else S.phase='order';render()}
 function cancel(){clearInterval(timer);try{wl&&wl.release()}catch(e){}S={phase:'setup'};render()}
 function gen(){const a=[1,2,3,4,5,6,7].filter(k=>!off.includes(k));if(!a.length)return;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}S.order=a;render()}
 function runSet(){S.phase='set';startTimer(S.cfg.set,()=>{if(S.i<S.order.length-1){S.i++;runSet()}else{S.phase='push';render()}});render()}
@@ -106,7 +109,7 @@ function rbar(i){const r=getR(i);if(r.done)return'';
  let h='<div class="rate"><p>Satz '+(i+1)+' - '+hint+'</p><div class="cells">';
  for(let n=1;n<=10;n++)h+='<button class="'+(r.cells[n-1]||'')+'" onclick="rate('+i+','+n+')">'+n+'</button>';
  return h+'</div></div>'}
-function finishPush(){S.push=parseInt($('#pr').value)||0;S.phase='cool';startTimer(S.cfg.rope,finish);render()}
+function finishPush(){S.push=parseInt($('#pr').value)||0;if(S.cfg.rope>0){S.phase='cool';startTimer(S.cfg.rope,finish);render()}else finish()}
 function reps(cells){return cells.filter(c=>c==='g'||c==='o').length}
 function calc(s){s.pull=s.ratings.reduce((a,r)=>a+reps(r),0);s.kRope=Math.round(11*s.w*(2*s.rope/60));s.kPull=Math.round(s.pull*(s.w+s.x)*0.00469);s.kPush=Math.round(s.push*(0.64*s.w+s.x)*0.003752);s.kcal=s.kRope+s.kPull+s.kPush}
 function finish(){clearInterval(timer);try{wl&&wl.release()}catch(e){}
@@ -120,7 +123,7 @@ function summary(s){const d=s.date.split('-').reverse().join('.'),tot=s.kcal||1,
  return h}
 function view(){
  const p=S.phase;if(p==='splash')return splash();
- if(p==='setup')return '<h1>Training</h1><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
+ if(p==='setup')return '<h1>Training</h1><label>Körpergewicht (kg)<input id="w" inputmode="decimal" value="'+cfg.w+'"></label><label>Zusatzgewicht (kg, leer = 0)<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0"></label><label>Dauer Seilspringen (Minuten, 0 = überspringen)<input id="rope" inputmode="decimal" value="'+cfg.rope+'"></label><label>Dauer pro Klimmzugsatz (Minuten)<input id="set" inputmode="decimal" value="'+cfg.set+'"></label><div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
  if(p==='warm'||p==='cool')return '<h1>'+(p==='warm'?'Warm-up':'Abschluss')+'</h1><div class="sub">Seilspringen</div>'+ring()+'<button class="btn ghost" onclick="skip()">Überspringen</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>';
  if(p==='order'){
   if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für '+(7-off.length)+' Sätze</div>'+gripPanel()+'<button class="btn alt" style="margin-top:auto" onclick="showG=!showG;render()">Griffe anpassen</button><button class="btn" onclick="gen()">Reihenfolge generieren</button>';
@@ -130,7 +133,7 @@ function view(){
  if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
 function calView(){if(ed)return editView();
  const all=ls.get('kt_sessions',[]),days=new Set(all.map(s=>s.date)),first=new Date(cal.y,cal.m,1),off=(first.getDay()+6)%7,len=new Date(cal.y,cal.m+1,0).getDate();
- const mn=first.toLocaleDateString('de-DE',{month:'long',year:'numeric'}),today=key(new Date());
+ const mn=first.toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'}),today=key(new Date());
  let h='<h1>Kalender</h1><div class="mh"><button onclick="mv(-1)">‹</button><b style="font-size:18px">'+mn+'</b><button onclick="mv(1)">›</button></div><div class="cal">';
  ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d=>h+='<div class="h">'+d+'</div>');
  for(let i=0;i<off;i++)h+='<div></div>';
@@ -143,7 +146,7 @@ function calView(){if(ed)return editView();
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
 function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'flex';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';
- const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
+ const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();tr(m);tr($('nav'));m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
 let ui=ls.get('kt_ui',{dark:false,hue:0});
 function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
 function fig(p){const sy=112-p*78,o=26*p,ey=(30+sy)/2,s='stroke="var(--ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
@@ -153,8 +156,16 @@ function initSplash(){const a=$('#sp'),f=$('#fg');let y0=null,p=0,done=0;const s
  a.onpointerdown=e=>{a.setPointerCapture(e.pointerId);y0=e.clientY};
  a.onpointermove=e=>{if(y0===null||done)return;set(Math.max(0,Math.min(1,(y0-e.clientY)/230)));if(p>=1){done=1;setTimeout(()=>{S={phase:'setup'};render()},300)}};
  a.onpointerup=a.onpointercancel=()=>{y0=null;if(done)return;const t=setInterval(()=>{if(done||p<=0.02){clearInterval(t);if(!done)set(0);return}set(p*.8)},16)}}
-function setView(){return '<h1>Einstellungen</h1><div class="card"><b>Darstellung</b><button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button></div><div class="card"><b>Akzentfarbe</b><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><div class="pl">Training</div></div></div></div><button class="btn" onclick="go(prev)">Fertig</button>'}
-function initRing(){const w=$('#hw'),mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
+let sopen='lang';
+function flag(l){const s={de:'<rect width="3" height="2"/><rect y=".667" width="3" height="1.333" fill="#d00"/><rect y="1.333" width="3" height=".667" fill="#ffce00"/>',fr:'<rect width="1" height="2" fill="#0055a4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ef4135"/>',it:'<rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ce2b37"/>',es:'<rect width="3" height="2" fill="#c60b1e"/><rect y=".5" width="3" height="1" fill="#ffc400"/>'};
+ if(l==='en')return '<svg viewBox="0 0 60 40" preserveAspectRatio="none"><rect width="60" height="40" fill="#012169"/><path d="M0 0 60 40M60 0 0 40" stroke="#fff" stroke-width="8"/><path d="M0 0 60 40M60 0 0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></svg>';
+ return '<svg viewBox="0 0 3 2" preserveAspectRatio="none">'+s[l]+'</svg>'}
+function setLang(l){ui.lang=l;applyLang();applyUI();render()}
+function setView(){const acc=(k,t,b)=>'<div class="card" style="padding:0 14px"><button class="ah" onclick="sopen=sopen===\''+k+'\'?\'\':\''+k+'\';render()"><span>'+t+'</span><span style="transform:rotate('+(sopen===k?90:0)+'deg)">›</span></button>'+(sopen===k?'<div style="padding:0 0 14px">'+b+'</div>':'')+'</div>';
+ const lg=['de','en','es','it','fr'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
+ const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><div class="pl">Training</div></div></div>';
+ return '<h1>Einstellungen</h1>'+acc('lang','Sprache',lg)+acc('des','Design',ds)+'<button class="btn" onclick="go(prev)">Fertig</button>'}
+function initRing(){const w=$('#hw');if(!w)return;const mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
  const mvr=e=>{const b=w.getBoundingClientRect();ui.hue=Math.round((Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI+360)%360);applyUI();mk()};
  w.onpointerdown=e=>{w.setPointerCapture(e.pointerId);d=1;mvr(e)};w.onpointermove=e=>{if(d)mvr(e)};w.onpointerup=()=>d=0}
 function del(id){ask('Training löschen?','Dieses Training wird endgültig aus dem Kalender entfernt.','Löschen',()=>{ls.set('kt_sessions',ls.get('kt_sessions',[]).filter(s=>s.id!==id));render()},'Behalten')}
@@ -168,7 +179,7 @@ function bars(a){const mx=Math.max(...a.map(x=>x.v),1),w=300/a.length,bw=Math.mi
  return '<svg viewBox="0 0 300 130" width="100%">'+a.map((x,i)=>{const h=x.v/mx*85,cx=i*w+w/2;return '<rect x="'+(cx-bw/2)+'" y="'+(105-h)+'" width="'+bw+'" height="'+h+'" rx="3" fill="var(--red)"/><text x="'+cx+'" y="'+(100-h)+'" font-size="10" text-anchor="middle" fill="var(--ink)">'+x.v+'</text><text x="'+cx+'" y="122" font-size="10" text-anchor="middle" fill="var(--mut)">'+x.l+'</text>'}).join('')+'</svg>'}
 function line(a){const v=a.map(x=>x.v),mn=Math.min(...v),sp=(Math.max(...v)-mn)||1,w=270/Math.max(a.length-1,1),P=a.map((x,i)=>[a.length>1?15+i*w:150,95-(x.v-mn)/sp*60]);
  return '<svg viewBox="0 0 300 130" width="100%"><polyline fill="none" stroke="var(--red)" stroke-width="2.5" points="'+P.map(p=>p.join(',')).join(' ')+'"/>'+P.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--red)"/><text x="'+p[0]+'" y="'+(p[1]-8)+'" font-size="10" text-anchor="middle" fill="var(--ink)">'+a[i].v+'</text><text x="'+p[0]+'" y="124" font-size="10" text-anchor="middle" fill="var(--mut)">'+a[i].l+'</text>').join('')+'</svg>'}
-function anaView(){const all=ls.get('kt_sessions',[]),pre=cal.y+'-'+String(cal.m+1).padStart(2,'0')+'-',L=all.filter(s=>s.date.startsWith(pre)).sort((a,b)=>a.id-b.id),mn=new Date(cal.y,cal.m,1).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
+function anaView(){const all=ls.get('kt_sessions',[]),pre=cal.y+'-'+String(cal.m+1).padStart(2,'0')+'-',L=all.filter(s=>s.date.startsWith(pre)).sort((a,b)=>a.id-b.id),mn=new Date(cal.y,cal.m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'});
  let h='<h1>Analyse</h1><div class="mh"><button onclick="mv(-1)">‹</button><b style="font-size:18px">'+mn+'</b><button onclick="mv(1)">›</button></div>';
  if(!L.length)return h+'<p class="sub">Keine Trainings in diesem Monat.</p>';
  const sum=f=>L.reduce((a,s)=>a+f(s),0),cnt=c=>sum(s=>s.ratings.reduce((a,r)=>a+r.filter(x=>x===c).length,0)),G=cnt('g'),O=cnt('o'),R=cnt('r'),q=Math.round(G/(G+O+R||1)*100),lab=s=>(+s.date.slice(8))+'.';
@@ -182,9 +193,80 @@ let off=ls.get('kt_off',[]),showG=false;
 function tg(k){const i=off.indexOf(k);if(i>=0)off.splice(i,1);else if(off.length<6)off.push(k);ls.set('kt_off',off);render()}
 function gripPanel(){return showG?'<div class="card" style="margin-top:14px">'+[1,2,3,4,5,6,7].map(k=>'<button class="gp'+(off.includes(k)?' x':'')+'" onclick="tg('+k+')">'+GRIPS[k]+'</button>').join('')+'<div class="mut" style="margin-top:8px">Antippen zum Streichen oder Zurückholen</div></div>':''}
 const PAUSE='<svg viewBox="0 0 24 24" width="72" height="72"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>';
-function ask(t,m,ok,fn,no){const d=document.createElement('div');d.id='dlg';d.innerHTML='<div class="dg"><h2>'+t+'</h2><p>'+m+'</p><div class="dgb"><button class="btn alt" id="dn">'+(no||'Abbrechen')+'</button><button class="btn" id="dy">'+ok+'</button></div></div>';document.body.appendChild(d);d.querySelector('#dn').onclick=()=>d.remove();d.querySelector('#dy').onclick=()=>{d.remove();fn()}}
+function ask(t,m,ok,fn,no){const d=document.createElement('div');d.id='dlg';d.innerHTML='<div class="dg"><h2>'+t+'</h2><p>'+m+'</p><div class="dgb"><button class="btn alt" id="dn">'+(no||'Abbrechen')+'</button><button class="btn" id="dy">'+ok+'</button></div></div>';document.body.appendChild(d);tr(d);d.querySelector('#dn').onclick=()=>d.remove();d.querySelector('#dy').onclick=()=>{d.remove();fn()}}
 function home(){const go_=()=>{clearInterval(timer);try{wl&&wl.release()}catch(e){}ed=null;showG=false;S={phase:'splash'};tab='train';render()};
  if(['warm','order','set','push','cool'].includes(S.phase))ask('Training beenden?','Du kehrst zum Startbildschirm zurück. Der Fortschritt dieses Trainings geht verloren.','Beenden',go_,'Weiter trainieren');else go_()}
+
+const NAMES={de:'Deutsch',en:'English',es:'Español',it:'Italiano',fr:'Français'},LOC={de:'de-DE',en:'en-GB',es:'es-ES',it:'it-IT',fr:'fr-FR'};
+const GR={de:['Standard','Handtuch (eng)','Parallel','Handtuch (breit)','Bizeps','Diagonal (Standard)','Diagonal (Bizeps)'],en:['Standard','Towel (narrow)','Parallel','Towel (wide)','Biceps','Diagonal (standard)','Diagonal (biceps)'],es:['Estándar','Toalla (estrecho)','Paralelo','Toalla (ancho)','Bíceps','Diagonal (estándar)','Diagonal (bíceps)'],it:['Standard','Asciugamano (stretto)','Parallela','Asciugamano (largo)','Bicipiti','Diagonale (standard)','Diagonale (bicipiti)'],fr:['Standard','Serviette (étroite)','Parallèle','Serviette (large)','Biceps','Diagonale (standard)','Diagonale (biceps)']};
+const TR=[
+`Training|Training|Entrenamiento|Allenamento|Entraînement`,`Kalender|Calendar|Calendario|Calendario|Calendrier`,`Analyse|Analysis|Análisis|Analisi|Analyse`,
+`Klimmzug-Training|Pull-up Training|Entrenamiento de dominadas|Allenamento trazioni|Entraînement tractions`,
+`Zieh dich hoch, um zu starten|Pull yourself up to start|Sube para empezar|Tirati su per iniziare|Hisse-toi pour commencer`,
+`Von unten nach oben wischen|Swipe from bottom to top|Desliza de abajo hacia arriba|Scorri dal basso verso l'alto|Glisse de bas en haut`,
+`Körpergewicht (kg)|Body weight (kg)|Peso corporal (kg)|Peso corporeo (kg)|Poids du corps (kg)`,
+`Zusatzgewicht (kg, leer = 0)|Extra weight (kg, empty = 0)|Peso extra (kg, vacío = 0)|Peso aggiuntivo (kg, vuoto = 0)|Poids additionnel (kg, vide = 0)`,
+`Dauer Seilspringen (Minuten, 0 = überspringen)|Jump rope duration (minutes, 0 = skip)|Duración de la comba (minutos, 0 = omitir)|Durata corda (minuti, 0 = salta)|Durée corde à sauter (minutes, 0 = passer)`,
+`Dauer pro Klimmzugsatz (Minuten)|Duration per pull-up set (minutes)|Duración por serie de dominadas (minutos)|Durata per serie di trazioni (minuti)|Durée par série de tractions (minutes)`,
+`Training starten|Start training|Empezar entrenamiento|Inizia allenamento|Démarrer l'entraînement`,
+`Bitte Körpergewicht eingeben.|Please enter your body weight.|Introduce tu peso corporal.|Inserisci il tuo peso corporeo.|Saisis ton poids du corps.`,
+`Warm-up|Warm-up|Calentamiento|Riscaldamento|Échauffement`,`Abschluss|Finish|Final|Finale|Final`,
+`Seilspringen|Jump rope|Saltar a la comba|Salto con la corda|Corde à sauter`,`Überspringen|Skip|Omitir|Salta|Passer`,`Abbrechen|Cancel|Cancelar|Annulla|Annuler`,
+`Zeit antippen zum Pausieren|Tap the time to pause|Toca el tiempo para pausar|Tocca il tempo per fare pausa|Touche le temps pour mettre en pause`,
+`Klimmzüge|Pull-ups|Dominadas|Trazioni|Tractions`,
+`Zufällige Griff-Reihenfolge für {0} Sätze|Random grip order for {0} sets|Orden aleatorio de agarres para {0} series|Ordine casuale delle prese per {0} serie|Ordre aléatoire des prises pour {0} séries`,
+`Griffe anpassen|Adjust grips|Ajustar agarres|Modifica prese|Ajuster les prises`,`Reihenfolge generieren|Generate order|Generar orden|Genera ordine|Générer l'ordre`,
+`Antippen zum Streichen oder Zurückholen|Tap to cross out or restore|Toca para tachar o restaurar|Tocca per barrare o ripristinare|Touche pour barrer ou rétablir`,
+`Reihenfolge|Order|Orden|Ordine|Ordre`,`Neu würfeln|Shuffle again|Mezclar de nuevo|Rimescola|Mélanger à nouveau`,
+`Satz {0} von {1}|Set {0} of {1}|Serie {0} de {1}|Serie {0} di {1}|Série {0} sur {1}`,`Nächster Satz|Next set|Siguiente serie|Serie successiva|Série suivante`,
+`Satz {0} - sauber geschafft|Set {0} - completed cleanly|Serie {0} - hecha sin problemas|Serie {0} - completata bene|Série {0} - réussie proprement`,
+`Satz {0} - gerade so geschafft|Set {0} - just made it|Serie {0} - por los pelos|Serie {0} - appena riuscita|Série {0} - tout juste réussie`,
+`Satz {0} - nicht geschafft|Set {0} - not completed|Serie {0} - no completada|Serie {0} - non riuscita|Série {0} - non réussie`,
+`Liegestütze|Push-ups|Flexiones|Flessioni|Pompes`,
+`Ein Satz – hol alles raus! Kein Timer.|One set – give it everything! No timer.|Una serie: ¡da todo! Sin temporizador.|Una serie: dai tutto! Nessun timer.|Une série : donne tout ! Pas de minuteur.`,
+`Geschaffte Wiederholungen|Repetitions completed|Repeticiones completadas|Ripetizioni completate|Répétitions réalisées`,
+`Fertig – weiter zum Seilspringen|Done – on to jump rope|Listo – a la comba|Fatto – alla corda|Terminé – direction la corde`,
+`Training abgeschlossen 💪|Training complete 💪|Entrenamiento completado 💪|Allenamento completato 💪|Entraînement terminé 💪`,
+`Neues Training|New training|Nuevo entrenamiento|Nuovo allenamento|Nouvel entraînement`,
+`geschätzter Verbrauch|estimated burn|consumo estimado|consumo stimato|dépense estimée`,`Gewicht|Weight|Peso|Peso|Poids`,
+`Klimmzug-Sätze|Pull-up sets|Series de dominadas|Serie di trazioni|Séries de tractions`,`Kalorien|Calories|Calorías|Calorie|Calories`,
+`Tippe auf einen Tag mit Punkt für die Auswertung.|Tap a day with a dot to see the results.|Toca un día con punto para ver el resultado.|Tocca un giorno con il punto per vedere il risultato.|Touche un jour avec un point pour voir le bilan.`,
+`Kein Training an diesem Tag.|No training on this day.|Ningún entrenamiento este día.|Nessun allenamento in questo giorno.|Aucun entraînement ce jour-là.`,
+`Bearbeiten|Edit|Editar|Modifica|Modifier`,`Löschen|Delete|Eliminar|Elimina|Supprimer`,
+`Training bearbeiten|Edit training|Editar entrenamiento|Modifica allenamento|Modifier l'entraînement`,
+`Zusatzgewicht (kg)|Extra weight (kg)|Peso extra (kg)|Peso aggiuntivo (kg)|Poids additionnel (kg)`,
+`Seilspringen je Runde (Min)|Jump rope per round (min)|Comba por ronda (min)|Corda per round (min)|Corde par tour (min)`,
+`Liegestütze (Wdh.)|Push-ups (reps)|Flexiones (rep.)|Flessioni (rip.)|Pompes (rép.)`,
+`Sätze (Felder antippen zum Ändern)|Sets (tap boxes to change)|Series (toca las casillas para cambiar)|Serie (tocca le caselle per cambiare)|Séries (touche les cases pour modifier)`,
+`Speichern|Save|Guardar|Salva|Enregistrer`,
+`Keine Trainings in diesem Monat.|No trainings this month.|Sin entrenamientos este mes.|Nessun allenamento in questo mese.|Aucun entraînement ce mois-ci.`,
+`Trainings|Trainings|Entrenamientos|Allenamenti|Entraînements`,`kcal gesamt|kcal total|kcal en total|kcal totali|kcal au total`,
+`sauber geschafft|completed cleanly|hechas sin problemas|completate bene|réussies proprement`,
+`Klimmzüge pro Training|Pull-ups per training|Dominadas por entrenamiento|Trazioni per allenamento|Tractions par entraînement`,
+`Liegestütze pro Training|Push-ups per training|Flexiones por entrenamiento|Flessioni per allenamento|Pompes par entraînement`,
+`Kalorien pro Training (kcal)|Calories per training (kcal)|Calorías por entrenamiento (kcal)|Calorie per allenamento (kcal)|Calories par entraînement (kcal)`,
+`Leistung pro Griff|Performance per grip|Rendimiento por agarre|Prestazione per presa|Performance par prise`,
+`{0} · {1} % sauber|{0} · {1} % clean|{0} · {1} % limpio|{0} · {1} % pulito|{0} · {1} % propre`,
+`grün sauber · orange gerade so · rot nicht geschafft|green clean · orange just made it · red not completed|verde limpio · naranja por los pelos · rojo no completado|verde pulito · arancione appena riuscito · rosso non riuscito|vert propre · orange tout juste · rouge raté`,
+`Einstellungen|Settings|Ajustes|Impostazioni|Réglages`,`Sprache|Language|Idioma|Lingua|Langue`,`Design|Design|Diseño|Design|Design`,
+`Zum Darkmode wechseln|Switch to dark mode|Cambiar a modo oscuro|Passa alla modalità scura|Passer en mode sombre`,
+`Zum hellen Modus wechseln|Switch to light mode|Cambiar a modo claro|Passa alla modalità chiara|Passer en mode clair`,
+`Akzentfarbe|Accent color|Color de acento|Colore di accento|Couleur d'accent`,
+`Mit dem Finger über den Ring fahren|Slide your finger around the ring|Desliza el dedo por el anillo|Scorri il dito sull'anello|Fais glisser ton doigt sur l'anneau`,
+`Fertig|Done|Listo|Fatto|Terminé`,`Training beenden?|End training?|¿Terminar el entrenamiento?|Terminare l'allenamento?|Terminer l'entraînement ?`,
+`Du kehrst zum Startbildschirm zurück. Der Fortschritt dieses Trainings geht verloren.|You will return to the start screen. The progress of this training will be lost.|Volverás a la pantalla de inicio. Se perderá el progreso de este entrenamiento.|Tornerai alla schermata iniziale. I progressi di questo allenamento andranno persi.|Tu retournes à l'écran d'accueil. La progression de cet entraînement sera perdue.`,
+`Beenden|End|Terminar|Termina|Terminer`,`Weiter trainieren|Keep training|Seguir entrenando|Continua|Continuer`,
+`Training löschen?|Delete training?|¿Eliminar el entrenamiento?|Eliminare l'allenamento?|Supprimer l'entraînement ?`,
+`Dieses Training wird endgültig aus dem Kalender entfernt.|This training will be permanently removed from the calendar.|Este entrenamiento se eliminará definitivamente del calendario.|Questo allenamento verrà rimosso definitivamente dal calendario.|Cet entraînement sera définitivement supprimé du calendrier.`,
+`Behalten|Keep|Conservar|Mantieni|Garder`,
+`Mo|Mo|L|Lu|Lu`,`Di|Tu|M|Ma|Ma`,`Mi|We|X|Me|Me`,`Do|Th|J|Gi|Je`,`Fr|Fr|V|Ve|Ve`,`Sa|Sa|S|Sa|Sa`,`So|Su|D|Do|Di`].map(r=>r.split('|'));
+const LG=['de','en','es','it','fr'],KM=new Map(TR.map((r,i)=>[r[0],i])),RX=TR.map((r,i)=>r[0].includes('{')?[new RegExp('^'+r[0].replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\d\}/g,'(.+?)')+'$'),i]:0).filter(Boolean);
+function tx(s){const l=ui.lang;if(l==='de')return s;const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2],k=LG.indexOf(l);
+ if(KM.has(c))return m[1]+TR[KM.get(c)][k]+m[3];
+ for(const[r,j]of RX){const x=c.match(r);if(x){let o=TR[j][k];x.slice(1).forEach((v,n)=>o=o.replace('{'+n+'}',v));return m[1]+o+m[3]}}return s}
+function tr(root){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(n._o===undefined)n._o=n.nodeValue;const v=tx(n._o);if(v!==n.nodeValue)n.nodeValue=v}}
+function applyLang(){GRIPS.splice(1,7,...GR[ui.lang]);document.documentElement.lang=ui.lang}
+{const d=(navigator.language||'de').slice(0,2);ui.lang=ui.lang||(LG.includes(d)?d:'de');applyLang()}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
