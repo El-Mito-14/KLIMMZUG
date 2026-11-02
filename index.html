@@ -18,7 +18,7 @@ input:focus{outline:none;border-color:var(--red)}
 .btn{width:100%;padding:16px;border:0;border-radius:12px;background:var(--red);color:#fff;font-size:18px;font-weight:700;margin-top:12px}
 .btn.alt{background:var(--ink);color:var(--bg)}.btn.ghost{background:none;color:var(--mut);font-size:15px;font-weight:600}
 .sub{text-align:center;color:var(--mut);font-size:15px}.big{text-align:center;font-size:24px;font-weight:700;margin:6px 0}
-.rw{position:relative;width:min(78vw,300px);margin:12px auto}.rw svg{width:100%;display:block}
+.rw{cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;width:min(78vw,300px);margin:12px auto}.rw svg{width:100%;display:block}
 .bgc{fill:none;stroke:var(--line);stroke-width:14}.fg{fill:none;stroke:var(--red);stroke-width:14;stroke-dasharray:754 754}
 .tm{color:var(--red);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:700;font-variant-numeric:tabular-nums}
 .rate{margin-top:auto;padding-top:14px}.rate p{margin:0 0 8px;font-size:14px;color:var(--mut);text-align:center}
@@ -48,13 +48,16 @@ ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);fon
 .sec{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:20px 0 8px}
 .sc{border:1.5px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}.sh{display:flex;align-items:center;gap:10px;margin-bottom:8px}.nb{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
 .kr{display:flex;justify-content:space-between;font-size:14px;margin-top:6px}.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--red)}
-#gear{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:10px;z-index:5;width:42px;height:42px;border:0;background:none;font-size:26px;color:var(--ink);padding:0}
-main h1{padding-right:40px}
+#gear,#home{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:10px;z-index:5;width:42px;height:42px;border:0;background:none;font-size:26px;color:var(--ink);padding:0}
+#home{right:54px}
+html,body{overscroll-behavior:none}main{overscroll-behavior:contain}
+main h1{padding-right:90px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 </head><body>
+<button id="home" onclick="home()" aria-label="Startbildschirm"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z"/></svg></button>
 <button id="gear" onclick="go('set')" aria-label="Einstellungen">⚙</button>
 <main id="m"></main>
 <nav><button id="n1" onclick="go('train')">Training</button><button id="n2" onclick="go('cal')">Kalender</button><button id="n3" onclick="go('ana')">Analyse</button></nav>
@@ -68,13 +71,14 @@ const now=new Date();let cal={y:now.getFullYear(),m:now.getMonth()};
 const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 let prev='train';function go(t){if(t==='set'&&tab!=='set')prev=tab;tab=t;render()}
 function beep(){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.3,ac.currentTime);o.start();o.stop(ac.currentTime+.5)}catch(e){}try{navigator.vibrate&&navigator.vibrate([250,120,250])}catch(e){}}
-function tick(){const rem=Math.max(0,S.end-Date.now()),f=rem/S.dur,r=$('#ring'),t=$('#time');
+function tick(){const rem=Math.max(0,S.paused?S.remain:S.end-Date.now()),f=rem/S.dur,r=$('#ring'),t=$('#time');
  if(r)r.style.strokeDasharray=(f*753.98).toFixed(1)+' 754';
- if(t){const s=Math.ceil(rem/1000);t.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}return rem}
-function startTimer(min,onEnd){clearInterval(timer);S.dur=min*60000;S.end=Date.now()+S.dur;S.onEnd=onEnd;
- timer=setInterval(()=>{if(tick()<=0){clearInterval(timer);beep();S.onEnd()}},100);tick()}
+ if(t){if(S.paused){t.innerHTML=PAUSE;return rem}const s=Math.ceil(rem/1000);t.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}return rem}
+function runTick(){clearInterval(timer);timer=setInterval(()=>{if(tick()<=0){clearInterval(timer);beep();S.onEnd()}},100)}
+function startTimer(min,onEnd){S.paused=false;S.dur=min*60000;S.end=Date.now()+S.dur;S.onEnd=onEnd;runTick();tick()}
+function tp(){if(!S.end||!S.onEnd)return;if(S.paused){S.paused=false;S.end=Date.now()+S.remain;runTick()}else{clearInterval(timer);S.remain=Math.max(0,S.end-Date.now());S.paused=true}tick()}
 function skip(){clearInterval(timer);S.onEnd()}
-function ring(){return '<div class="rw"><svg viewBox="0 0 280 280"><circle class="bgc" cx="140" cy="140" r="120"/><circle id="ring" class="fg" cx="140" cy="140" r="120" transform="rotate(-90 140 140)"/></svg><div id="time" class="tm">0:00</div></div>'}
+function ring(){return '<div class="rw" onclick="tp()"><svg viewBox="0 0 280 280"><circle class="bgc" cx="140" cy="140" r="120"/><circle id="ring" class="fg" cx="140" cy="140" r="120" transform="rotate(-90 140 140)"/></svg><div id="time" class="tm">0:00</div></div><div class="mut" style="text-align:center">Zeit antippen zum Pausieren</div>'}
 function start(){
  const w=parseFloat($('#w').value.replace(',','.'));
  if(!(w>0)){$('#msg').textContent='Bitte Körpergewicht eingeben.';return}
@@ -116,7 +120,7 @@ function view(){
  if(p==='order'){
   if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für '+(7-off.length)+' Sätze</div>'+gripPanel()+'<button class="btn alt" style="margin-top:auto" onclick="showG=!showG;render()">Griffe anpassen</button><button class="btn" onclick="gen()">Reihenfolge generieren</button>';
   return '<h1>Reihenfolge</h1><ol>'+S.order.map(g=>'<li>'+GRIPS[g]+'</li>').join('')+'</ol><button class="btn alt" onclick="gen()">Neu würfeln</button><button class="btn" style="margin-top:auto" onclick="runSet()">Training starten</button>'}
- if(p==='set')return '<div class="sub">Satz '+(S.i+1)+' von '+S.order.length+'</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(S.i>0?rbar(S.i-1):'');
+ if(p==='set')return '<div class="sub">Satz '+(S.i+1)+' von '+S.order.length+'</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+rbar(S.i);
  if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" type="number" inputmode="numeric" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(S.order.length-1);
  if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
 function calView(){if(ed)return editView();
@@ -133,7 +137,7 @@ function calView(){if(ed)return editView();
  return h}
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
-function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'block';
+function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'block';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';
  const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
 let ui=ls.get('kt_ui',{dark:false,hue:0});
 function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
@@ -172,6 +176,8 @@ function anaView(){const all=ls.get('kt_sessions',[]),pre=cal.y+'-'+String(cal.m
 let off=ls.get('kt_off',[]),showG=false;
 function tg(k){const i=off.indexOf(k);if(i>=0)off.splice(i,1);else if(off.length<6)off.push(k);ls.set('kt_off',off);render()}
 function gripPanel(){return showG?'<div class="card" style="margin-top:14px">'+[1,2,3,4,5,6,7].map(k=>'<button class="gp'+(off.includes(k)?' x':'')+'" onclick="tg('+k+')">'+GRIPS[k]+'</button>').join('')+'<div class="mut" style="margin-top:8px">Antippen zum Streichen oder Zurückholen</div></div>':''}
+const PAUSE='<svg viewBox="0 0 24 24" width="72" height="72"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>';
+function home(){const act=['warm','order','set','push','cool'].includes(S.phase);if(act&&!confirm('Training abbrechen und zum Startbildschirm? Der Fortschritt geht verloren.'))return;clearInterval(timer);try{wl&&wl.release()}catch(e){}ed=null;showG=false;S={phase:'splash'};tab='train';render()}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
