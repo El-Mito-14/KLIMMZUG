@@ -61,6 +61,7 @@ main h1{padding-right:90px}
 .lr{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:12px 4px;font-size:17px;color:var(--ink)}.lr.on{color:var(--red);font-weight:700}
 .fl{width:30px;height:20px;border-radius:4px;overflow:hidden;flex:none;border:1px solid var(--line)}.fl svg{display:block;width:100%;height:100%}
 .pl{border:0;pointer-events:auto;font-family:inherit;font-size:15px;padding:10px 22px}
+.hc .pl{width:100%;padding:20px 0;font-size:22px;border-radius:30px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -164,7 +165,7 @@ function flag(l){const s={de:'<rect width="3" height="2"/><rect y=".667" width="
 function setLang(l){ui.lang=l;applyLang();applyUI();render()}
 function setView(){const acc=(k,t,b)=>'<div class="card" style="padding:0 14px"><button class="ah" onclick="sopen=sopen===\''+k+'\'?\'\':\''+k+'\';render()"><span>'+t+'</span><span style="transform:rotate('+(sopen===k?90:0)+'deg)">›</span></button>'+(sopen===k?'<div style="padding:0 0 14px">'+b+'</div>':'')+'</div>';
  const lg=['de','en','es','it','fr'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
- const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><button class="pl" onclick="go(prev)">Fertig</button></div></div>';
+ const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><button class="pl" onclick="go(prev)">Fertig</button></div></div>';
  return '<h1>Einstellungen</h1>'+acc('lang','Sprache',lg)+acc('des','Design',ds)+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
 function initRing(){const w=$('#hw');if(!w)return;const mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
  const mvr=e=>{const b=w.getBoundingClientRect();ui.hue=Math.round((Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI+360)%360);applyUI();mk()};
