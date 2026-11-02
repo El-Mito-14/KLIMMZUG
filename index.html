@@ -36,7 +36,7 @@ ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);fon
 .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.mh button{border:0;background:none;font-size:28px;color:var(--red);padding:4px 14px}
 [data-theme=dark]{--bg:#2e2e30;--ink:#fff;--line:#4a4a4e;--mut:#a3a3a8}
 .hint{font-size:34px;color:var(--red);animation:up 1.2s ease-in-out infinite}@keyframes up{50%{transform:translateY(-10px)}}
-.hw{position:relative;width:min(70vw,280px);aspect-ratio:1;margin:14px auto;touch-action:none}
+.hw{position:relative;width:min(64vw,250px);aspect-ratio:1;margin:14px auto;touch-action:none}
 .hg{position:absolute;inset:0;border-radius:50%;background:conic-gradient(hsl(0,70%,48%),hsl(60,70%,48%),hsl(120,70%,48%),hsl(180,70%,48%),hsl(240,70%,48%),hsl(300,70%,48%),hsl(360,70%,48%));-webkit-mask:radial-gradient(circle,transparent 58%,#000 59%);mask:radial-gradient(circle,transparent 58%,#000 59%)}
 #hm{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #0007;background:var(--red);pointer-events:none}
 .hc{position:absolute;inset:22%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none}
@@ -60,6 +60,7 @@ main h1{padding-right:90px}
 .ah{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:16px 2px;font-size:18px;font-weight:700;color:var(--ink)}.ah span+span{display:inline-block;transition:transform .2s;color:var(--red);font-size:24px}
 .lr{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:12px 4px;font-size:17px;color:var(--ink)}.lr.on{color:var(--red);font-weight:700}
 .fl{width:30px;height:20px;border-radius:4px;overflow:hidden;flex:none;border:1px solid var(--line)}.fl svg{display:block;width:100%;height:100%}
+.pl{border:0;pointer-events:auto;font-family:inherit;font-size:15px;padding:10px 22px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -163,11 +164,11 @@ function flag(l){const s={de:'<rect width="3" height="2"/><rect y=".667" width="
 function setLang(l){ui.lang=l;applyLang();applyUI();render()}
 function setView(){const acc=(k,t,b)=>'<div class="card" style="padding:0 14px"><button class="ah" onclick="sopen=sopen===\''+k+'\'?\'\':\''+k+'\';render()"><span>'+t+'</span><span style="transform:rotate('+(sopen===k?90:0)+'deg)">›</span></button>'+(sopen===k?'<div style="padding:0 0 14px">'+b+'</div>':'')+'</div>';
  const lg=['de','en','es','it','fr'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
- const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><div class="pl">Training</div></div></div>';
- return '<h1>Einstellungen</h1>'+acc('lang','Sprache',lg)+acc('des','Design',ds)+'<button class="btn" onclick="go(prev)">Fertig</button>'}
+ const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><div class="pr"></div><button class="pl" onclick="go(prev)">Fertig</button></div></div>';
+ return '<h1>Einstellungen</h1>'+acc('lang','Sprache',lg)+acc('des','Design',ds)+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
 function initRing(){const w=$('#hw');if(!w)return;const mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
  const mvr=e=>{const b=w.getBoundingClientRect();ui.hue=Math.round((Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI+360)%360);applyUI();mk()};
- w.onpointerdown=e=>{w.setPointerCapture(e.pointerId);d=1;mvr(e)};w.onpointermove=e=>{if(d)mvr(e)};w.onpointerup=()=>d=0}
+ w.onpointerdown=e=>{if(e.target.closest('.pl'))return;const b=w.getBoundingClientRect();if(Math.hypot(e.clientX-b.left-b.width/2,e.clientY-b.top-b.height/2)<b.width*.28)return;w.setPointerCapture(e.pointerId);d=1;mvr(e)};w.onpointermove=e=>{if(d)mvr(e)};w.onpointerup=()=>d=0}
 function del(id){ask('Training löschen?','Dieses Training wird endgültig aus dem Kalender entfernt.','Löschen',()=>{ls.set('kt_sessions',ls.get('kt_sessions',[]).filter(s=>s.id!==id));render()},'Behalten')}
 function edit(id){ed=JSON.parse(JSON.stringify(ls.get('kt_sessions',[]).find(s=>s.id===id)));render()}
 function cyc(i,k){const c=ed.ratings[i],m={g:'o',o:'r',r:null};c[k]=c[k]?m[c[k]]:'g';render()}
