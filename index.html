@@ -63,6 +63,10 @@ main h1{padding-right:90px}
 .pl{border:0;pointer-events:auto;font-family:inherit;font-size:15px;padding:10px 22px}
 .hc .pl{width:100%;padding:20px 0;font-size:22px;border-radius:30px}
 nav button{padding:15px 2px;font-size:14px}
+.d.p:not(.t):after{content:"";position:absolute;left:50%;bottom:6px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;border:1.5px solid var(--red);box-sizing:border-box}
+.pb{display:block;width:100%;background:none;border:1.5px solid var(--line);border-radius:12px;padding:13px 4px;font-size:16px;color:var(--ink);margin-bottom:6px}
+.seg{display:flex;gap:6px;margin-bottom:12px}.seg .pb{flex:1;margin:0;font-size:14px}
+.pb.pk,.d.pk{background:var(--red);border-color:var(--red);color:#fff}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -135,13 +139,13 @@ function view(){
  if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" type="number" inputmode="numeric" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(S.order.length-1);
  if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
 function calView(){if(ed)return editView();
- const all=ls.get('kt_sessions',[]),days=new Set(all.map(s=>s.date)),first=new Date(cal.y,cal.m,1),off=(first.getDay()+6)%7,len=new Date(cal.y,cal.m+1,0).getDate();
+ const all=ls.get('kt_sessions',[]),days=new Set(all.map(s=>s.date)),P=ls.get('kt_plan',null),first=new Date(cal.y,cal.m,1),off=(first.getDay()+6)%7,len=new Date(cal.y,cal.m+1,0).getDate();
  const mn=first.toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'}),today=key(new Date());
  let h='<h1>Kalender</h1><div class="mh"><button onclick="mv(-1)">‹</button><b style="font-size:18px">'+mn+'</b><button onclick="mv(1)">›</button></div><div class="cal">';
  ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d=>h+='<div class="h">'+d+'</div>');
  for(let i=0;i<off;i++)h+='<div></div>';
  for(let d=1;d<=len;d++){const k=cal.y+'-'+String(cal.m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-  h+='<button class="d'+(days.has(k)?' t':'')+(sel===k?' s':'')+(k===today?' n':'')+'" onclick="pick(\''+k+'\')">'+d+'</button>'}
+  h+='<button class="d'+(days.has(k)?' t':'')+(isPlanned(k,P)?' p':'')+(sel===k?' s':'')+(k===today?' n':'')+'" onclick="pick(\''+k+'\')">'+d+'</button>'}
  h+='</div>';
  if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(s=>summary(s)+'<button class="btn alt" onclick="edit('+s.id+')">Bearbeiten</button><button class="btn ghost" onclick="del('+s.id+')">Löschen</button>').join('<hr>'):'<p class="sub" style="margin-top:20px">Kein Training an diesem Tag.</p>'}
  else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit Punkt für die Auswertung.</p>';
@@ -168,7 +172,7 @@ function setView(){const acc=(k,t,b)=>'<div class="card" style="padding:0 14px">
  const lg=['de','en','es','it','fr','th'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
  const pf='<label style="margin:0">Name<input value="'+esc(ui.name||'')+'" maxlength="30" autocomplete="off" oninput="ui.name=this.value.trim();applyUI()"></label>';
  const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><button class="pl" onclick="go(prev)">Fertig</button></div></div>';
- return '<h1>Einstellungen</h1>'+acc('prof','Profil',pf)+acc('lang','Sprache',lg)+acc('des','Design',ds)+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
+ return '<h1>Einstellungen</h1>'+acc('prof','Profil',pf)+acc('plan','Trainingsplan',planUI())+acc('lang','Sprache',lg)+acc('des','Design',ds)+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
 function initRing(){const w=$('#hw');if(!w)return;const mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
  const mvr=e=>{const b=w.getBoundingClientRect();ui.hue=Math.round((Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI+360)%360);applyUI();mk()};
  w.onpointerdown=e=>{if(e.target.closest('.pl'))return;const b=w.getBoundingClientRect();if(Math.hypot(e.clientX-b.left-b.width/2,e.clientY-b.top-b.height/2)<b.width*.28)return;w.setPointerCapture(e.pointerId);d=1;mvr(e)};w.onpointermove=e=>{if(d)mvr(e)};w.onpointerup=()=>d=0}
@@ -266,7 +270,11 @@ const TR=[
 `Mo|Mo|L|Lu|Lu|จ.`,`Di|Tu|M|Ma|Ma|อ.`,`Mi|We|X|Me|Me|พ.`,`Do|Th|J|Gi|Je|พฤ.`,`Fr|Fr|V|Ve|Ve|ศ.`,`Sa|Sa|S|Sa|Sa|ส.`,`So|Su|D|Do|Di|อา.`,
 `Hallo, {0}!|Hello, {0}!|¡Hola, {0}!|Ciao, {0}!|Salut, {0} !|สวัสดี {0}!`,`Analyse für {0}|Analysis for {0}|Análisis de {0}|Analisi di {0}|Analyse de {0}|วิเคราะห์ของ {0}`,`Profil|Profile|Perfil|Profilo|Profil|โปรไฟล์`,`Name|Name|Nombre|Nome|Nom|ชื่อ`,
 `Minigame|Minigame|Minijuego|Minigioco|Mini-jeu|มินิเกม`,`Highscore: {0}|Highscore: {0}|Récord: {0}|Record: {0}|Record : {0}|คะแนนสูงสุด: {0}`,`Zieh dich immer wieder hoch!|Keep pulling yourself up!|¡Sigue subiendo!|Continua a tirarti su!|Continue à te hisser !|ดึงตัวขึ้นซ้ำไปเรื่อย ๆ!`,
-`Schwierigkeit|Difficulty|Dificultad|Difficoltà|Difficulté|ความยาก`,`Zurücksetzen|Reset|Reiniciar|Reimposta|Réinitialiser|รีเซ็ต`].map(r=>r.split('|'));
+`Schwierigkeit|Difficulty|Dificultad|Difficoltà|Difficulté|ความยาก`,`Zurücksetzen|Reset|Reiniciar|Reimposta|Réinitialiser|รีเซ็ต`,
+`Trainingsplan|Training plan|Plan de entrenamiento|Piano di allenamento|Plan d'entraînement|แผนการฝึก`,`nach Tag|By weekday|Por día|Per giorno|Par jour|ตามวัน`,`nach Rhythmus|By interval|Por intervalo|A intervalli|Par rythme|ตามรอบ`,`individuell|Custom|Personalizado|Personalizzato|Personnalisé|กำหนดเอง`,
+`Alle wie viele Tage?|Every how many days?|¿Cada cuántos días?|Ogni quanti giorni?|Tous les combien de jours ?|ทุกกี่วัน?`,`Der Rhythmus beginnt heute.|The interval starts today.|El intervalo empieza hoy.|L'intervallo inizia oggi.|Le rythme commence aujourd'hui.|รอบเริ่มนับจากวันนี้`,
+`Tage in diesem Monat antippen|Tap days in this month|Toca los días de este mes|Tocca i giorni di questo mese|Touche les jours de ce mois|แตะวันที่ในเดือนนี้`,`Plan speichern|Save plan|Guardar plan|Salva piano|Enregistrer le plan|บันทึกแผน`,
+`Plan löschen|Delete plan|Eliminar plan|Elimina piano|Supprimer le plan|ลบแผน`,`Plan gespeichert|Plan saved|Plan guardado|Piano salvato|Plan enregistré|บันทึกแผนแล้ว`].map(r=>r.split('|'));
 const LG=['de','en','es','it','fr','th'],KM=new Map(TR.map((r,i)=>[r[0],i])),RX=TR.map((r,i)=>r[0].includes('{')?[new RegExp('^'+r[0].replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\d\}/g,'(.+?)')+'$'),i]:0).filter(Boolean);
 function tx(s){const l=ui.lang;if(l==='de')return s;const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2],k=LG.indexOf(l);
  if(KM.has(c))return m[1]+TR[KM.get(c)][k]+m[3];
@@ -277,7 +285,7 @@ function applyLang(){GRIPS.splice(1,7,...GR[ui.lang]);document.documentElement.l
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function greet(){return ui.name?'<div class="big" style="font-size:30px;margin-bottom:6px">Hallo, '+esc(ui.name)+'!</div>':''}
 let G={p:0,n:0,armed:true},HS=ls.get('kt_hs',0);
-function gameView(){return '<div id="gp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><div id="gs" class="kc" style="font-size:76px;line-height:1">'+G.n+'</div><div style="width:60%;max-width:200px;margin:8px auto 0"><div class="mut" style="font-size:12px">Schwierigkeit</div><div class="bar" id="gd"><i style="width:'+Math.round(dif()*100)+'%"></i></div></div><div id="gf" style="width:100%;max-width:300px;margin:10px 0"></div><div class="sub">Zieh dich immer wieder hoch!</div><div id="gh" class="big" style="margin-top:14px">Highscore: '+HS+'</div><button class="btn ghost" style="width:auto;padding:10px 20px;margin-top:6px" onclick="G.n=0;G.p=0;G.armed=true;render()">Zurücksetzen</button></div>'}
+function gameView(){return '<div id="gp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><div id="gs" class="kc" style="font-size:76px;line-height:1">'+G.n+'</div><div id="gf" style="width:100%;max-width:300px;margin:10px 0"></div><div class="sub">Zieh dich immer wieder hoch!</div><div id="gh" class="big" style="margin-top:14px">Highscore: '+HS+'</div></div>'}
 function dif(){return 1-Math.exp(-G.n/45)}
 function initGame(){const a=$('#gp'),f=$('#gf');let ly=null,pid=null,le=0,t=null,lt=0;
  const set=v=>{G.p=Math.max(0,Math.min(1,v));f.innerHTML=fig(G.p)};
@@ -288,7 +296,7 @@ function initGame(){const a=$('#gp'),f=$('#gf');let ly=null,pid=null,le=0,t=null
  a.onpointerdown=e=>{if(e.target.closest('button'))return;if(pid!==null&&performance.now()-le<400)return;pid=e.pointerId;le=performance.now();try{a.setPointerCapture(pid)}catch(x){}ly=e.clientY;lt=le;clearInterval(t);t=setInterval(loop,16)};
  a.onpointermove=e=>{if(e.pointerId!==pid||ly===null)return;le=performance.now();set(G.p+Math.max(-.2,Math.min(.2,(ly-e.clientY)/(230+230*dif()))));ly=e.clientY;chk()};
  a.onpointerup=a.onpointercancel=e=>{if(e.pointerId!==pid)return;pid=null;ly=null}}
-function rep(){G.n++;const bd=$('#gd i');if(bd)bd.style.width=Math.round(dif()*100)+'%';const s=$('#gs');if(s){s.textContent=G.n;s.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:200})}
+function rep(){G.n++;const s=$('#gs');if(s){s.textContent=G.n;s.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:200})}
  if(G.n>HS){HS=G.n;ls.set('kt_hs',HS);const h=$('#gh');if(h)h.textContent=tx('Highscore: '+HS)}
  try{navigator.vibrate&&navigator.vibrate(G.n%100===0?[60,40,60,40,120]:G.n%10===0?[40,30,40]:12)}catch(e){}
  if(G.n%100===0)fx(1);else if(G.n%10===0)fx(0)}
@@ -302,6 +310,25 @@ function fx(big,el,txt){const o=document.createElement('div');o.style.cssText='p
   add('left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;border-radius:'+(Math.random()<.5?'50%':'2px')+';background:'+col(),[{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+Math.cos(an)*d+'px,'+(Math.sin(an)*d+(big?120:60))+'px) rotate('+Math.random()*540+'deg)',opacity:0}],(big?1500:900)+Math.random()*400,'cubic-bezier(.1,.8,.3,1)')}
  add('left:0;right:0;top:'+(cy-40)+'px;text-align:center;font-size:'+(big?96:54)+'px;font-weight:900;color:var(--red);text-shadow:0 0 '+(big?30:14)+'px var(--red)',[{transform:'scale(.4)',opacity:0},{transform:'scale(1.15)',opacity:1,offset:.3},{transform:'translateY(-'+(big?60:40)+'px) scale(1)',opacity:0}],big?1500:900).textContent=txt||G.n+'!';
  setTimeout(()=>o.remove(),2000)}
+let pl=JSON.parse(JSON.stringify(ls.get('kt_plan',null)||{type:'day',days:[],every:3,custom:[]})),pmsg=false;
+const p2=n=>String(n).padStart(2,'0');
+function isPlanned(k,P){if(!P)return false;if(P.type==='custom')return P.custom.includes(k);if(k<P.start)return false;
+ const a=k.split('-').map(Number),b=P.start.split('-').map(Number),D=Math.round((Date.UTC(a[0],a[1]-1,a[2])-Date.UTC(b[0],b[1]-1,b[2]))/864e5);
+ return P.type==='day'?P.days.includes((new Date(a[0],a[1]-1,a[2]).getDay()+6)%7):(P.every>0&&D%P.every===0)}
+function pd(i){const x=pl.days.indexOf(i);if(x>=0)pl.days.splice(x,1);else pl.days.push(i);render()}
+function pc(k){const x=pl.custom.indexOf(k);if(x>=0)pl.custom.splice(x,1);else pl.custom.push(k);render()}
+function savePlan(){ls.set('kt_plan',{type:pl.type,start:key(new Date()),days:[...pl.days],every:Math.max(1,Math.round(pl.every)||1),custom:[...pl.custom]});pmsg=true;render()}
+function delPlan(){ls.set('kt_plan',null);pl={type:'day',days:[],every:3,custom:[]};render()}
+function miniCal(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,len=new Date(y,m+1,0).getDate();
+ let h='<div style="margin:12px 0 2px"><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b></div><div class="mut" style="margin-bottom:8px">Tage in diesem Monat antippen</div><div class="cal">';
+ ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d=>h+='<div class="h">'+d+'</div>');for(let i=0;i<off;i++)h+='<div></div>';
+ for(let d=1;d<=len;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);h+='<button class="d'+(pl.custom.includes(k)?' pk':'')+'" onclick="pc(\''+k+'\')">'+d+'</button>'}return h+'</div>'}
+function planUI(){const pm=pmsg;pmsg=false;
+ let h='<div class="seg">'+[['day','nach Tag'],['rhythm','nach Rhythmus'],['custom','individuell']].map(t=>'<button class="pb'+(pl.type===t[0]?' pk':'')+'" onclick="pl.type=\''+t[0]+'\';render()">'+t[1]+'</button>').join('')+'</div>';
+ if(pl.type==='day')h+=[0,1,2,3,4,5,6].map(i=>{const n=new Date(2024,0,1+i).toLocaleDateString(LOC[ui.lang],{weekday:'long'});return '<button class="pb'+(pl.days.includes(i)?' pk':'')+'" onclick="pd('+i+')">'+n.charAt(0).toUpperCase()+n.slice(1)+'</button>'}).join('');
+ else if(pl.type==='rhythm')h+='<label style="margin-top:12px">Alle wie viele Tage?<input type="number" inputmode="numeric" min="1" value="'+pl.every+'" oninput="pl.every=parseInt(this.value)||0"></label><div class="mut" style="margin-bottom:8px">Der Rhythmus beginnt heute.</div>';
+ else h+=miniCal();
+ return h+'<button class="btn" onclick="savePlan()">Plan speichern</button>'+(ls.get('kt_plan',null)?'<button class="btn ghost" onclick="delPlan()">Plan löschen</button>':'')+(pm?'<div class="sub" style="margin-top:6px">Plan gespeichert</div>':'')}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
