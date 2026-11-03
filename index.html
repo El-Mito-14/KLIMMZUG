@@ -68,6 +68,7 @@ nav button{padding:15px 2px;font-size:14px}
 .seg{display:flex;gap:6px;margin-bottom:12px}.seg .pb{flex:1;margin:0;font-size:14px}
 .pb.pk{border:2px solid var(--red);padding:12.5px 3.5px;font-weight:700}
 .d.pk{box-shadow:inset 0 0 0 2px var(--red);font-weight:700}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}.wk .pb{aspect-ratio:1;margin:0;padding:0;font-size:15px;display:flex;align-items:center;justify-content:center}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -327,10 +328,10 @@ function miniCal(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),off=(new 
  for(let d=1;d<=len;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);h+='<button class="d'+(pl.custom.includes(k)?' pk':'')+'" onclick="pc(\''+k+'\')">'+d+'</button>'}return h+'</div>'}
 function planUI(){const pm=pmsg;pmsg=false;
  let h='<div class="seg">'+[['day','nach Tag'],['rhythm','nach Rhythmus'],['custom','individuell']].map(t=>'<button class="pb'+(pl.type===t[0]?' pk':'')+'" onclick="pl.type=\''+t[0]+'\';render()">'+t[1]+'</button>').join('')+'</div>';
- if(pl.type==='day')h+=[0,1,2,3,4,5,6].map(i=>{const n=new Date(2024,0,1+i).toLocaleDateString(LOC[ui.lang],{weekday:'long'});return '<button class="pb'+(pl.days.includes(i)?' pk':'')+'" onclick="pd('+i+')">'+n.charAt(0).toUpperCase()+n.slice(1)+'</button>'}).join('');
+ if(pl.type==='day')h+='<div class="wk">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map((n,i)=>'<button class="pb'+(pl.days.includes(i)?' pk':'')+'" onclick="pd('+i+')">'+n+'</button>').join('')+'</div>';
  else if(pl.type==='rhythm')h+='<label style="margin-top:12px">Alle wie viele Tage?<input type="number" inputmode="numeric" min="1" value="'+pl.every+'" oninput="pl.every=parseInt(this.value)||0"></label><div class="mut" style="margin-bottom:8px">Der Rhythmus beginnt heute.</div>';
  else h+=miniCal();
- return h+'<button class="btn" onclick="savePlan()">Plan speichern</button>'+(ls.get('kt_plan',null)?'<button class="btn ghost" onclick="delPlan()">Plan löschen</button>':'')+(pm?'<div class="sub" style="margin-top:6px">Plan gespeichert</div>':'')}
+ return h+'<button class="btn" onclick="savePlan()">Plan speichern</button>'+(ls.get('kt_plan',null)?'<button class="btn ghost" onclick="delPlan()">Plan löschen</button>':'')}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
