@@ -86,7 +86,7 @@ let tab='train',S={phase:'splash'},ed=null,timer=null,ac=null,wl=null,sel=null;
 let cfg=ls.get('kt_cfg',{w:'',x:'',rope:3,set:4});
 const now=new Date();let cal={y:now.getFullYear(),m:now.getMonth()};
 const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-let prev='train';function go(t){if(t==='set'&&tab!=='set')prev=tab;tab=t;render()}
+let prev='train';function go(t){if(t==='set'&&tab!=='set'){prev=tab;sopen=''}tab=t;render()}
 function beep(){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.3,ac.currentTime);o.start();o.stop(ac.currentTime+.5)}catch(e){}try{navigator.vibrate&&navigator.vibrate([250,120,250])}catch(e){}}
 function tick(){const rem=Math.max(0,S.paused?S.remain:S.end-Date.now()),f=rem/S.dur,r=$('#ring'),t=$('#time');
  if(r)r.style.strokeDasharray=(f*753.98).toFixed(1)+' 754';
@@ -165,7 +165,7 @@ function initSplash(){const a=$('#sp'),f=$('#fg');let y0=null,p=0,done=0;const s
  a.onpointerdown=e=>{a.setPointerCapture(e.pointerId);y0=e.clientY};
  a.onpointermove=e=>{if(y0===null||done)return;set(Math.max(0,Math.min(1,(y0-e.clientY)/230)));if(p>=1){done=1;fx(0,'#fg','💪');try{navigator.vibrate&&navigator.vibrate([40,30,40])}catch(e){}setTimeout(()=>{S={phase:'setup'};render()},450)}};
  a.onpointerup=a.onpointercancel=()=>{y0=null;if(done)return;const t=setInterval(()=>{if(done||p<=0.02){clearInterval(t);if(!done)set(0);return}set(p*.8)},16)}}
-let sopen='prof';
+let sopen='';
 function flag(l){const s={de:'<rect width="3" height="2"/><rect y=".667" width="3" height="1.333" fill="#d00"/><rect y="1.333" width="3" height=".667" fill="#ffce00"/>',fr:'<rect width="1" height="2" fill="#0055a4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ef4135"/>',it:'<rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ce2b37"/>',th:'<rect width="3" height="2" fill="#a51931"/><rect y=".333" width="3" height="1.333" fill="#f4f5f8"/><rect y=".667" width="3" height=".667" fill="#2d2a4a"/>',es:'<rect width="3" height="2" fill="#c60b1e"/><rect y=".5" width="3" height="1" fill="#ffc400"/>'};
  if(l==='en')return '<svg viewBox="0 0 60 40" preserveAspectRatio="none"><rect width="60" height="40" fill="#012169"/><path d="M0 0 60 40M60 0 0 40" stroke="#fff" stroke-width="8"/><path d="M0 0 60 40M60 0 0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></svg>';
  return '<svg viewBox="0 0 3 2" preserveAspectRatio="none">'+s[l]+'</svg>'}
@@ -323,7 +323,7 @@ function pc(k){const x=pl.custom.indexOf(k);if(x>=0)pl.custom.splice(x,1);else p
 function savePlan(){ls.set('kt_plan',{type:pl.type,start:key(new Date()),days:[...pl.days],every:Math.max(1,Math.round(pl.every)||1),custom:[...pl.custom]});pmsg=false;sopen='';render()}
 function delPlan(){ls.set('kt_plan',null);pl={type:'day',days:[],every:3,custom:[]};render()}
 function miniCal(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,len=new Date(y,m+1,0).getDate();
- let h='<div style="margin:12px 0 2px"><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b></div><div class="mut" style="margin-bottom:8px">Tage in diesem Monat antippen</div><div class="cal">';
+ let h='<div style="margin:12px 0 8px"><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b></div><div class="cal">';
  ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d=>h+='<div class="h">'+d+'</div>');for(let i=0;i<off;i++)h+='<div></div>';
  for(let d=1;d<=len;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);h+='<button class="d'+(pl.custom.includes(k)?' pk':'')+'" onclick="pc(\''+k+'\')">'+d+'</button>'}return h+'</div>'}
 function planUI(){const pm=pmsg;pmsg=false;
