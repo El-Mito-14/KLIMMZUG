@@ -279,15 +279,15 @@ function greet(){return ui.name?'<div class="big" style="font-size:30px;margin-b
 let G={p:0,n:0,armed:true},HS=ls.get('kt_hs',0);
 function gameView(){return '<div id="gp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><div id="gs" class="kc" style="font-size:76px;line-height:1">'+G.n+'</div><div style="width:60%;max-width:200px;margin:8px auto 0"><div class="mut" style="font-size:12px">Schwierigkeit</div><div class="bar" id="gd"><i style="width:'+Math.round(dif()*100)+'%"></i></div></div><div id="gf" style="width:100%;max-width:300px;margin:10px 0"></div><div class="sub">Zieh dich immer wieder hoch!</div><div id="gh" class="big" style="margin-top:14px">Highscore: '+HS+'</div><button class="btn ghost" style="width:auto;padding:10px 20px;margin-top:6px" onclick="G.n=0;G.p=0;G.armed=true;render()">Zurücksetzen</button></div>'}
 function dif(){return 1-Math.exp(-G.n/45)}
-function initGame(){const a=$('#gp'),f=$('#gf');let ly=null,t=null,lt=0;
+function initGame(){const a=$('#gp'),f=$('#gf');let ly=null,pid=null,le=0,t=null,lt=0;
  const set=v=>{G.p=Math.max(0,Math.min(1,v));f.innerHTML=fig(G.p)};
- const chk=()=>{const D=dif();if(G.p<=.3-.18*D)G.armed=true;else if(G.p>=.9+.07*D&&G.armed){G.armed=false;rep()}};
- const loop=()=>{if(!f.isConnected){clearInterval(t);ly=null;return}const now=performance.now(),dt=Math.min(.05,(now-lt)/1000);lt=now;
+ const chk=()=>{const D=dif(),now=performance.now();if(G.p<=.3-.18*D)G.armed=true;else if(G.p>=.9+.07*D&&G.armed&&now-(G.t||0)>400){G.armed=false;G.t=now;rep()}};
+ const loop=()=>{if(!f.isConnected){clearInterval(t);ly=null;pid=null;return}const now=performance.now(),dt=Math.min(.05,(now-lt)/1000);lt=now;
   if(ly!==null)set(G.p-.6*dif()*dt);else{if(G.p<=.02){clearInterval(t);set(0);chk();return}set(G.p*.86)}chk()};
  set(G.p);
- a.onpointerdown=e=>{if(e.target.closest('button'))return;a.setPointerCapture(e.pointerId);ly=e.clientY;lt=performance.now();clearInterval(t);t=setInterval(loop,16)};
- a.onpointermove=e=>{if(ly===null)return;set(G.p+(ly-e.clientY)/(230+230*dif()));ly=e.clientY;chk()};
- a.onpointerup=a.onpointercancel=()=>{ly=null}}
+ a.onpointerdown=e=>{if(e.target.closest('button'))return;if(pid!==null&&performance.now()-le<400)return;pid=e.pointerId;le=performance.now();try{a.setPointerCapture(pid)}catch(x){}ly=e.clientY;lt=le;clearInterval(t);t=setInterval(loop,16)};
+ a.onpointermove=e=>{if(e.pointerId!==pid||ly===null)return;le=performance.now();set(G.p+Math.max(-.2,Math.min(.2,(ly-e.clientY)/(230+230*dif()))));ly=e.clientY;chk()};
+ a.onpointerup=a.onpointercancel=e=>{if(e.pointerId!==pid)return;pid=null;ly=null}}
 function rep(){G.n++;const bd=$('#gd i');if(bd)bd.style.width=Math.round(dif()*100)+'%';const s=$('#gs');if(s){s.textContent=G.n;s.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:200})}
  if(G.n>HS){HS=G.n;ls.set('kt_hs',HS);const h=$('#gh');if(h)h.textContent=tx('Highscore: '+HS)}
  try{navigator.vibrate&&navigator.vibrate(G.n%100===0?[60,40,60,40,120]:G.n%10===0?[40,30,40]:12)}catch(e){}
