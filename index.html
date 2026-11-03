@@ -66,7 +66,8 @@ nav button{padding:15px 2px;font-size:14px}
 .d.p:not(.t):after{content:"";position:absolute;left:50%;bottom:6px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;border:1.5px solid var(--red);box-sizing:border-box}
 .pb{display:block;width:100%;background:none;border:1.5px solid var(--line);border-radius:12px;padding:13px 4px;font-size:16px;color:var(--ink);margin-bottom:6px}
 .seg{display:flex;gap:6px;margin-bottom:12px}.seg .pb{flex:1;margin:0;font-size:14px}
-.pb.pk,.d.pk{background:var(--red);border-color:var(--red);color:#fff}
+.pb.pk{border:2px solid var(--red);padding:12.5px 3.5px;font-weight:700}
+.d.pk{box-shadow:inset 0 0 0 2px var(--red);font-weight:700}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -147,7 +148,7 @@ function calView(){if(ed)return editView();
  for(let d=1;d<=len;d++){const k=cal.y+'-'+String(cal.m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
   h+='<button class="d'+(days.has(k)?' t':'')+(isPlanned(k,P)?' p':'')+(sel===k?' s':'')+(k===today?' n':'')+'" onclick="pick(\''+k+'\')">'+d+'</button>'}
  h+='</div>';
- if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(s=>summary(s)+'<button class="btn alt" onclick="edit('+s.id+')">Bearbeiten</button><button class="btn ghost" onclick="del('+s.id+')">Löschen</button>').join('<hr>'):'<p class="sub" style="margin-top:20px">Kein Training an diesem Tag.</p>'}
+ if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(s=>summary(s)+'<button class="btn alt" onclick="edit('+s.id+')">Bearbeiten</button><button class="btn ghost" onclick="del('+s.id+')">Löschen</button>').join('<hr>'):'<p class="sub" style="margin-top:20px">'+(isPlanned(sel,P)?'Für diesen Tag ist ein Training geplant.':'Kein Training an diesem Tag.')+'</p>'}
  else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit Punkt für die Auswertung.</p>';
  return h}
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
@@ -274,7 +275,8 @@ const TR=[
 `Trainingsplan|Training plan|Plan de entrenamiento|Piano di allenamento|Plan d'entraînement|แผนการฝึก`,`nach Tag|By weekday|Por día|Per giorno|Par jour|ตามวัน`,`nach Rhythmus|By interval|Por intervalo|A intervalli|Par rythme|ตามรอบ`,`individuell|Custom|Personalizado|Personalizzato|Personnalisé|กำหนดเอง`,
 `Alle wie viele Tage?|Every how many days?|¿Cada cuántos días?|Ogni quanti giorni?|Tous les combien de jours ?|ทุกกี่วัน?`,`Der Rhythmus beginnt heute.|The interval starts today.|El intervalo empieza hoy.|L'intervallo inizia oggi.|Le rythme commence aujourd'hui.|รอบเริ่มนับจากวันนี้`,
 `Tage in diesem Monat antippen|Tap days in this month|Toca los días de este mes|Tocca i giorni di questo mese|Touche les jours de ce mois|แตะวันที่ในเดือนนี้`,`Plan speichern|Save plan|Guardar plan|Salva piano|Enregistrer le plan|บันทึกแผน`,
-`Plan löschen|Delete plan|Eliminar plan|Elimina piano|Supprimer le plan|ลบแผน`,`Plan gespeichert|Plan saved|Plan guardado|Piano salvato|Plan enregistré|บันทึกแผนแล้ว`].map(r=>r.split('|'));
+`Plan löschen|Delete plan|Eliminar plan|Elimina piano|Supprimer le plan|ลบแผน`,`Plan gespeichert|Plan saved|Plan guardado|Piano salvato|Plan enregistré|บันทึกแผนแล้ว`,
+`Für diesen Tag ist ein Training geplant.|A training is planned for this day.|Hay un entrenamiento planificado para este día.|C'è un allenamento pianificato per questo giorno.|Un entraînement est prévu pour ce jour.|มีการฝึกตามแผนในวันนี้`].map(r=>r.split('|'));
 const LG=['de','en','es','it','fr','th'],KM=new Map(TR.map((r,i)=>[r[0],i])),RX=TR.map((r,i)=>r[0].includes('{')?[new RegExp('^'+r[0].replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\d\}/g,'(.+?)')+'$'),i]:0).filter(Boolean);
 function tx(s){const l=ui.lang;if(l==='de')return s;const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2],k=LG.indexOf(l);
  if(KM.has(c))return m[1]+TR[KM.get(c)][k]+m[3];
