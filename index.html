@@ -69,6 +69,7 @@ nav button{padding:15px 2px;font-size:14px}
 .pb.pk{border:2px solid var(--red);padding:12.5px 3.5px;font-weight:700}
 .d.pk{box-shadow:inset 0 0 0 2px var(--red);font-weight:700}
 .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}.wk .pb{aspect-ratio:1;margin:0;padding:0;font-size:15px;display:flex;align-items:center;justify-content:center}
+#mc{touch-action:pan-y}.d:disabled{opacity:.45}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -86,7 +87,7 @@ let tab='train',S={phase:'splash'},ed=null,timer=null,ac=null,wl=null,sel=null;
 let cfg=ls.get('kt_cfg',{w:'',x:'',rope:3,set:4});
 const now=new Date();let cal={y:now.getFullYear(),m:now.getMonth()};
 const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-let prev='train';function go(t){if(t==='set'&&tab!=='set'){prev=tab;sopen=''}tab=t;render()}
+let prev='train';function go(t){if(t==='set'&&tab!=='set'){prev=tab;sopen='';pmv=null}tab=t;render()}
 function beep(){try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.3,ac.currentTime);o.start();o.stop(ac.currentTime+.5)}catch(e){}try{navigator.vibrate&&navigator.vibrate([250,120,250])}catch(e){}}
 function tick(){const rem=Math.max(0,S.paused?S.remain:S.end-Date.now()),f=rem/S.dur,r=$('#ring'),t=$('#time');
  if(r)r.style.strokeDasharray=(f*753.98).toFixed(1)+' 754';
@@ -155,7 +156,7 @@ function calView(){if(ed)return editView();
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
 function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('#n4').className=tab==='game'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'flex';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';
- const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView,game:gameView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();if(tab==='game')initGame();tr(m);tr($('nav'));m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
+ const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView,game:gameView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();initMc();if(tab==='game')initGame();tr(m);tr($('nav'));m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
 let ui=ls.get('kt_ui',{dark:false,hue:0});
 function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
 function fig(p){const sy=112-p*78,o=26*p,ey=(30+sy)/2,s='stroke="var(--ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
@@ -322,10 +323,17 @@ function pd(i){const x=pl.days.indexOf(i);if(x>=0)pl.days.splice(x,1);else pl.da
 function pc(k){const x=pl.custom.indexOf(k);if(x>=0)pl.custom.splice(x,1);else pl.custom.push(k);render()}
 function savePlan(){ls.set('kt_plan',{type:pl.type,start:key(new Date()),days:[...pl.days],every:Math.max(1,Math.round(pl.every)||1),custom:[...pl.custom]});pmsg=false;sopen='';render()}
 function delPlan(){ls.set('kt_plan',null);pl={type:'day',days:[],every:3,custom:[]};render()}
-function miniCal(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,len=new Date(y,m+1,0).getDate();
- let h='<div style="margin:12px 0 8px"><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b></div><div class="cal">';
+let pmv=null;
+function cmv(){if(!pmv){const n=new Date();pmv={y:n.getFullYear(),m:n.getMonth()}}return pmv}
+function vm(d){const v=cmv();let m=v.m+d,y=v.y;if(m<0){m=11;y--}if(m>11){m=0;y++}pmv={y,m};render()}
+function initMc(){const e=$('#mc');if(!e)return;let x0=null,y0=null;
+ e.onpointerdown=ev=>{x0=ev.clientX;y0=ev.clientY};
+ e.onpointerup=ev=>{if(x0===null)return;const dx=ev.clientX-x0,dy=ev.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)vm(dx<0?1:-1)};
+ e.onpointercancel=()=>{x0=null}}
+function miniCal(){const n=new Date(),v=cmv(),y=v.y,m=v.m,past=y<n.getFullYear()||(y===n.getFullYear()&&m<n.getMonth()),off=(new Date(y,m,1).getDay()+6)%7,len=new Date(y,m+1,0).getDate();
+ let h='<div id="mc"><div class="mh" style="margin:8px 0"><button onclick="vm(-1)">‹</button><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b><button onclick="vm(1)">›</button></div><div class="cal">';
  ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d=>h+='<div class="h">'+d+'</div>');for(let i=0;i<off;i++)h+='<div></div>';
- for(let d=1;d<=len;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);h+='<button class="d'+(pl.custom.includes(k)?' pk':'')+'" onclick="pc(\''+k+'\')">'+d+'</button>'}return h+'</div>'}
+ for(let d=1;d<=len;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);h+='<button class="d'+(pl.custom.includes(k)?' pk':'')+'"'+(past?' disabled':'')+' onclick="pc(\''+k+'\')">'+d+'</button>'}return h+'</div></div>'}
 function planUI(){const pm=pmsg;pmsg=false;
  let h='<div class="seg">'+[['day','nach Tag'],['rhythm','nach Rhythmus'],['custom','individuell']].map(t=>'<button class="pb'+(pl.type===t[0]?' pk':'')+'" onclick="pl.type=\''+t[0]+'\';render()">'+t[1]+'</button>').join('')+'</div>';
  if(pl.type==='day')h+='<div class="wk">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map((n,i)=>'<button class="pb'+(pl.days.includes(i)?' pk':'')+'" onclick="pd('+i+')">'+n+'</button>').join('')+'</div>';
