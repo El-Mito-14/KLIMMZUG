@@ -154,18 +154,18 @@ let ui=ls.get('kt_ui',{dark:false,hue:0});
 function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
 function fig(p){const sy=112-p*78,o=26*p,ey=(30+sy)/2,s='stroke="var(--ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
  return '<svg viewBox="0 0 220 215" width="100%" style="max-height:40vh"><line x1="30" y1="30" x2="190" y2="30" stroke="var(--red)" stroke-width="8" stroke-linecap="round"/><g '+s+'><polyline points="85,30 '+(92.5-o)+','+ey+' 100,'+sy+'"/><polyline points="135,30 '+(127.5+o)+','+ey+' 120,'+sy+'"/><line x1="110" y1="'+sy+'" x2="110" y2="'+(sy+52)+'"/><polyline points="103,'+(sy+105)+' 110,'+(sy+52)+' 117,'+(sy+105)+'"/><circle cx="110" cy="'+(sy-17)+'" r="13" fill="var(--bg)"/></g></svg>'}
-function splash(){return '<div id="sp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center">'+greet()+'<h1 style="margin:0 0 4px;padding:0">Klimmzug-Training</h1><div class="sub">Zieh dich hoch, um zu starten</div><div id="fg" style="width:100%;max-width:300px;margin:18px 0"></div><div class="hint">↑</div><div class="sub">Von unten nach oben wischen</div></div>'}
+function splash(){return '<div id="sp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><h1 style="margin:0 0 4px;padding:0">'+(ui.name?'Hallo, '+esc(ui.name)+'!':'Klimmzug-Training')+'</h1><div class="sub">Zieh dich hoch, um zu starten</div><div id="fg" style="width:100%;max-width:300px;margin:18px 0"></div><div class="hint">↑</div><div class="sub">Von unten nach oben wischen</div></div>'}
 function initSplash(){const a=$('#sp'),f=$('#fg');let y0=null,p=0,done=0;const set=v=>{p=v;f.innerHTML=fig(p)};set(0);
  a.onpointerdown=e=>{a.setPointerCapture(e.pointerId);y0=e.clientY};
- a.onpointermove=e=>{if(y0===null||done)return;set(Math.max(0,Math.min(1,(y0-e.clientY)/230)));if(p>=1){done=1;setTimeout(()=>{S={phase:'setup'};render()},300)}};
+ a.onpointermove=e=>{if(y0===null||done)return;set(Math.max(0,Math.min(1,(y0-e.clientY)/230)));if(p>=1){done=1;fx(0,'#fg','💪');try{navigator.vibrate&&navigator.vibrate([40,30,40])}catch(e){}setTimeout(()=>{S={phase:'setup'};render()},450)}};
  a.onpointerup=a.onpointercancel=()=>{y0=null;if(done)return;const t=setInterval(()=>{if(done||p<=0.02){clearInterval(t);if(!done)set(0);return}set(p*.8)},16)}}
 let sopen='prof';
-function flag(l){const s={de:'<rect width="3" height="2"/><rect y=".667" width="3" height="1.333" fill="#d00"/><rect y="1.333" width="3" height=".667" fill="#ffce00"/>',fr:'<rect width="1" height="2" fill="#0055a4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ef4135"/>',it:'<rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ce2b37"/>',es:'<rect width="3" height="2" fill="#c60b1e"/><rect y=".5" width="3" height="1" fill="#ffc400"/>'};
+function flag(l){const s={de:'<rect width="3" height="2"/><rect y=".667" width="3" height="1.333" fill="#d00"/><rect y="1.333" width="3" height=".667" fill="#ffce00"/>',fr:'<rect width="1" height="2" fill="#0055a4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ef4135"/>',it:'<rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ce2b37"/>',th:'<rect width="3" height="2" fill="#a51931"/><rect y=".333" width="3" height="1.333" fill="#f4f5f8"/><rect y=".667" width="3" height=".667" fill="#2d2a4a"/>',es:'<rect width="3" height="2" fill="#c60b1e"/><rect y=".5" width="3" height="1" fill="#ffc400"/>'};
  if(l==='en')return '<svg viewBox="0 0 60 40" preserveAspectRatio="none"><rect width="60" height="40" fill="#012169"/><path d="M0 0 60 40M60 0 0 40" stroke="#fff" stroke-width="8"/><path d="M0 0 60 40M60 0 0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></svg>';
  return '<svg viewBox="0 0 3 2" preserveAspectRatio="none">'+s[l]+'</svg>'}
 function setLang(l){ui.lang=l;applyLang();applyUI();render()}
 function setView(){const acc=(k,t,b)=>'<div class="card" style="padding:0 14px"><button class="ah" onclick="sopen=sopen===\''+k+'\'?\'\':\''+k+'\';render()"><span>'+t+'</span><span style="transform:rotate('+(sopen===k?90:0)+'deg)">›</span></button>'+(sopen===k?'<div style="padding:0 0 14px">'+b+'</div>':'')+'</div>';
- const lg=['de','en','es','it','fr'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
+ const lg=['de','en','es','it','fr','th'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
  const pf='<label style="margin:0">Name<input value="'+esc(ui.name||'')+'" maxlength="30" autocomplete="off" oninput="ui.name=this.value.trim();applyUI()"></label>';
  const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><button class="pl" onclick="go(prev)">Fertig</button></div></div>';
  return '<h1>Einstellungen</h1>'+acc('prof','Profil',pf)+acc('lang','Sprache',lg)+acc('des','Design',ds)+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
@@ -201,72 +201,72 @@ function ask(t,m,ok,fn,no){const d=document.createElement('div');d.id='dlg';d.in
 function home(){const go_=()=>{clearInterval(timer);try{wl&&wl.release()}catch(e){}ed=null;showG=false;S={phase:'splash'};tab='train';render()};
  if(['warm','order','set','push','cool'].includes(S.phase))ask('Training beenden?','Du kehrst zum Startbildschirm zurück. Der Fortschritt dieses Trainings geht verloren.','Beenden',go_,'Weiter trainieren');else go_()}
 
-const NAMES={de:'Deutsch',en:'English',es:'Español',it:'Italiano',fr:'Français'},LOC={de:'de-DE',en:'en-GB',es:'es-ES',it:'it-IT',fr:'fr-FR'};
-const GR={de:['Standard','Handtuch (eng)','Parallel','Handtuch (breit)','Bizeps','Diagonal (Standard)','Diagonal (Bizeps)'],en:['Standard','Towel (narrow)','Parallel','Towel (wide)','Biceps','Diagonal (standard)','Diagonal (biceps)'],es:['Estándar','Toalla (estrecho)','Paralelo','Toalla (ancho)','Bíceps','Diagonal (estándar)','Diagonal (bíceps)'],it:['Standard','Asciugamano (stretto)','Parallela','Asciugamano (largo)','Bicipiti','Diagonale (standard)','Diagonale (bicipiti)'],fr:['Standard','Serviette (étroite)','Parallèle','Serviette (large)','Biceps','Diagonale (standard)','Diagonale (biceps)']};
+const NAMES={th:'ไทย',de:'Deutsch',en:'English',es:'Español',it:'Italiano',fr:'Français'},LOC={th:'th-TH-u-ca-gregory',de:'de-DE',en:'en-GB',es:'es-ES',it:'it-IT',fr:'fr-FR'};
+const GR={th:['มาตรฐาน','ผ้าเช็ดตัว (แคบ)','ขนาน','ผ้าเช็ดตัว (กว้าง)','ไบเซปส์','เฉียง (มาตรฐาน)','เฉียง (ไบเซปส์)'],de:['Standard','Handtuch (eng)','Parallel','Handtuch (breit)','Bizeps','Diagonal (Standard)','Diagonal (Bizeps)'],en:['Standard','Towel (narrow)','Parallel','Towel (wide)','Biceps','Diagonal (standard)','Diagonal (biceps)'],es:['Estándar','Toalla (estrecho)','Paralelo','Toalla (ancho)','Bíceps','Diagonal (estándar)','Diagonal (bíceps)'],it:['Standard','Asciugamano (stretto)','Parallela','Asciugamano (largo)','Bicipiti','Diagonale (standard)','Diagonale (bicipiti)'],fr:['Standard','Serviette (étroite)','Parallèle','Serviette (large)','Biceps','Diagonale (standard)','Diagonale (biceps)']};
 const TR=[
-`Training|Training|Entrenamiento|Allenamento|Entraînement`,`Kalender|Calendar|Calendario|Calendario|Calendrier`,`Analyse|Analysis|Análisis|Analisi|Analyse`,
-`Klimmzug-Training|Pull-up Training|Entrenamiento de dominadas|Allenamento trazioni|Entraînement tractions`,
-`Zieh dich hoch, um zu starten|Pull yourself up to start|Sube para empezar|Tirati su per iniziare|Hisse-toi pour commencer`,
-`Von unten nach oben wischen|Swipe from bottom to top|Desliza de abajo hacia arriba|Scorri dal basso verso l'alto|Glisse de bas en haut`,
-`Körpergewicht (kg)|Body weight (kg)|Peso corporal (kg)|Peso corporeo (kg)|Poids du corps (kg)`,
-`Zusatzgewicht (kg, leer = 0)|Extra weight (kg, empty = 0)|Peso extra (kg, vacío = 0)|Peso aggiuntivo (kg, vuoto = 0)|Poids additionnel (kg, vide = 0)`,
-`Dauer Seilspringen (Minuten, 0 = überspringen)|Jump rope duration (minutes, 0 = skip)|Duración de la comba (minutos, 0 = omitir)|Durata corda (minuti, 0 = salta)|Durée corde à sauter (minutes, 0 = passer)`,
-`Dauer pro Klimmzugsatz (Minuten)|Duration per pull-up set (minutes)|Duración por serie de dominadas (minutos)|Durata per serie di trazioni (minuti)|Durée par série de tractions (minutes)`,
-`Training starten|Start training|Empezar entrenamiento|Inizia allenamento|Démarrer l'entraînement`,
-`Bitte Körpergewicht eingeben.|Please enter your body weight.|Introduce tu peso corporal.|Inserisci il tuo peso corporeo.|Saisis ton poids du corps.`,
-`Warm-up|Warm-up|Calentamiento|Riscaldamento|Échauffement`,`Abschluss|Finish|Final|Finale|Final`,
-`Seilspringen|Jump rope|Saltar a la comba|Salto con la corda|Corde à sauter`,`Überspringen|Skip|Omitir|Salta|Passer`,`Abbrechen|Cancel|Cancelar|Annulla|Annuler`,
-`Zeit antippen zum Pausieren|Tap the time to pause|Toca el tiempo para pausar|Tocca il tempo per fare pausa|Touche le temps pour mettre en pause`,
-`Klimmzüge|Pull-ups|Dominadas|Trazioni|Tractions`,
-`Zufällige Griff-Reihenfolge für {0} Sätze|Random grip order for {0} sets|Orden aleatorio de agarres para {0} series|Ordine casuale delle prese per {0} serie|Ordre aléatoire des prises pour {0} séries`,
-`Griffe anpassen|Adjust grips|Ajustar agarres|Modifica prese|Ajuster les prises`,`Reihenfolge generieren|Generate order|Generar orden|Genera ordine|Générer l'ordre`,
-`Antippen zum Streichen oder Zurückholen|Tap to cross out or restore|Toca para tachar o restaurar|Tocca per barrare o ripristinare|Touche pour barrer ou rétablir`,
-`Reihenfolge|Order|Orden|Ordine|Ordre`,`Neu würfeln|Shuffle again|Mezclar de nuevo|Rimescola|Mélanger à nouveau`,
-`Satz {0} von {1}|Set {0} of {1}|Serie {0} de {1}|Serie {0} di {1}|Série {0} sur {1}`,`Nächster Satz|Next set|Siguiente serie|Serie successiva|Série suivante`,
-`Satz {0} - sauber geschafft|Set {0} - completed cleanly|Serie {0} - hecha sin problemas|Serie {0} - completata bene|Série {0} - réussie proprement`,
-`Satz {0} - gerade so geschafft|Set {0} - just made it|Serie {0} - por los pelos|Serie {0} - appena riuscita|Série {0} - tout juste réussie`,
-`Satz {0} - nicht geschafft|Set {0} - not completed|Serie {0} - no completada|Serie {0} - non riuscita|Série {0} - non réussie`,
-`Liegestütze|Push-ups|Flexiones|Flessioni|Pompes`,
-`Ein Satz – hol alles raus! Kein Timer.|One set – give it everything! No timer.|Una serie: ¡da todo! Sin temporizador.|Una serie: dai tutto! Nessun timer.|Une série : donne tout ! Pas de minuteur.`,
-`Geschaffte Wiederholungen|Repetitions completed|Repeticiones completadas|Ripetizioni completate|Répétitions réalisées`,
-`Fertig – weiter zum Seilspringen|Done – on to jump rope|Listo – a la comba|Fatto – alla corda|Terminé – direction la corde`,
-`Training abgeschlossen 💪|Training complete 💪|Entrenamiento completado 💪|Allenamento completato 💪|Entraînement terminé 💪`,
-`Neues Training|New training|Nuevo entrenamiento|Nuovo allenamento|Nouvel entraînement`,
-`geschätzter Verbrauch|estimated burn|consumo estimado|consumo stimato|dépense estimée`,`Gewicht|Weight|Peso|Peso|Poids`,
-`Klimmzug-Sätze|Pull-up sets|Series de dominadas|Serie di trazioni|Séries de tractions`,`Kalorien|Calories|Calorías|Calorie|Calories`,
-`Tippe auf einen Tag mit Punkt für die Auswertung.|Tap a day with a dot to see the results.|Toca un día con punto para ver el resultado.|Tocca un giorno con il punto per vedere il risultato.|Touche un jour avec un point pour voir le bilan.`,
-`Kein Training an diesem Tag.|No training on this day.|Ningún entrenamiento este día.|Nessun allenamento in questo giorno.|Aucun entraînement ce jour-là.`,
-`Bearbeiten|Edit|Editar|Modifica|Modifier`,`Löschen|Delete|Eliminar|Elimina|Supprimer`,
-`Training bearbeiten|Edit training|Editar entrenamiento|Modifica allenamento|Modifier l'entraînement`,
-`Zusatzgewicht (kg)|Extra weight (kg)|Peso extra (kg)|Peso aggiuntivo (kg)|Poids additionnel (kg)`,
-`Seilspringen je Runde (Min)|Jump rope per round (min)|Comba por ronda (min)|Corda per round (min)|Corde par tour (min)`,
-`Liegestütze (Wdh.)|Push-ups (reps)|Flexiones (rep.)|Flessioni (rip.)|Pompes (rép.)`,
-`Sätze (Felder antippen zum Ändern)|Sets (tap boxes to change)|Series (toca las casillas para cambiar)|Serie (tocca le caselle per cambiare)|Séries (touche les cases pour modifier)`,
-`Speichern|Save|Guardar|Salva|Enregistrer`,
-`Keine Trainings in diesem Monat.|No trainings this month.|Sin entrenamientos este mes.|Nessun allenamento in questo mese.|Aucun entraînement ce mois-ci.`,
-`Trainings|Trainings|Entrenamientos|Allenamenti|Entraînements`,`kcal gesamt|kcal total|kcal en total|kcal totali|kcal au total`,
-`sauber geschafft|completed cleanly|hechas sin problemas|completate bene|réussies proprement`,
-`Klimmzüge pro Training|Pull-ups per training|Dominadas por entrenamiento|Trazioni per allenamento|Tractions par entraînement`,
-`Liegestütze pro Training|Push-ups per training|Flexiones por entrenamiento|Flessioni per allenamento|Pompes par entraînement`,
-`Kalorien pro Training (kcal)|Calories per training (kcal)|Calorías por entrenamiento (kcal)|Calorie per allenamento (kcal)|Calories par entraînement (kcal)`,
-`Leistung pro Griff|Performance per grip|Rendimiento por agarre|Prestazione per presa|Performance par prise`,
-`{0} · {1} % sauber|{0} · {1} % clean|{0} · {1} % limpio|{0} · {1} % pulito|{0} · {1} % propre`,
-`grün sauber · orange gerade so · rot nicht geschafft|green clean · orange just made it · red not completed|verde limpio · naranja por los pelos · rojo no completado|verde pulito · arancione appena riuscito · rosso non riuscito|vert propre · orange tout juste · rouge raté`,
-`Einstellungen|Settings|Ajustes|Impostazioni|Réglages`,`Sprache|Language|Idioma|Lingua|Langue`,`Design|Design|Diseño|Design|Design`,
-`Zum Darkmode wechseln|Switch to dark mode|Cambiar a modo oscuro|Passa alla modalità scura|Passer en mode sombre`,
-`Zum hellen Modus wechseln|Switch to light mode|Cambiar a modo claro|Passa alla modalità chiara|Passer en mode clair`,
-`Akzentfarbe|Accent color|Color de acento|Colore di accento|Couleur d'accent`,
-`Mit dem Finger über den Ring fahren|Slide your finger around the ring|Desliza el dedo por el anillo|Scorri il dito sull'anello|Fais glisser ton doigt sur l'anneau`,
-`Fertig|Done|Listo|Fatto|Terminé`,`Training beenden?|End training?|¿Terminar el entrenamiento?|Terminare l'allenamento?|Terminer l'entraînement ?`,
-`Du kehrst zum Startbildschirm zurück. Der Fortschritt dieses Trainings geht verloren.|You will return to the start screen. The progress of this training will be lost.|Volverás a la pantalla de inicio. Se perderá el progreso de este entrenamiento.|Tornerai alla schermata iniziale. I progressi di questo allenamento andranno persi.|Tu retournes à l'écran d'accueil. La progression de cet entraînement sera perdue.`,
-`Beenden|End|Terminar|Termina|Terminer`,`Weiter trainieren|Keep training|Seguir entrenando|Continua|Continuer`,
-`Training löschen?|Delete training?|¿Eliminar el entrenamiento?|Eliminare l'allenamento?|Supprimer l'entraînement ?`,
-`Dieses Training wird endgültig aus dem Kalender entfernt.|This training will be permanently removed from the calendar.|Este entrenamiento se eliminará definitivamente del calendario.|Questo allenamento verrà rimosso definitivamente dal calendario.|Cet entraînement sera définitivement supprimé du calendrier.`,
-`Behalten|Keep|Conservar|Mantieni|Garder`,
-`Mo|Mo|L|Lu|Lu`,`Di|Tu|M|Ma|Ma`,`Mi|We|X|Me|Me`,`Do|Th|J|Gi|Je`,`Fr|Fr|V|Ve|Ve`,`Sa|Sa|S|Sa|Sa`,`So|Su|D|Do|Di`,
-`Hallo, {0}!|Hello, {0}!|¡Hola, {0}!|Ciao, {0}!|Salut, {0} !`,`Analyse für {0}|Analysis for {0}|Análisis de {0}|Analisi di {0}|Analyse de {0}`,`Profil|Profile|Perfil|Profilo|Profil`,`Name|Name|Nombre|Nome|Nom`,
-`Minigame|Minigame|Minijuego|Minigioco|Mini-jeu`,`Highscore: {0}|Highscore: {0}|Récord: {0}|Record: {0}|Record : {0}`,`Zieh dich immer wieder hoch!|Keep pulling yourself up!|¡Sigue subiendo!|Continua a tirarti su!|Continue à te hisser !`].map(r=>r.split('|'));
-const LG=['de','en','es','it','fr'],KM=new Map(TR.map((r,i)=>[r[0],i])),RX=TR.map((r,i)=>r[0].includes('{')?[new RegExp('^'+r[0].replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\d\}/g,'(.+?)')+'$'),i]:0).filter(Boolean);
+`Training|Training|Entrenamiento|Allenamento|Entraînement|การฝึก`,`Kalender|Calendar|Calendario|Calendario|Calendrier|ปฏิทิน`,`Analyse|Analysis|Análisis|Analisi|Analyse|วิเคราะห์`,
+`Klimmzug-Training|Pull-up Training|Entrenamiento de dominadas|Allenamento trazioni|Entraînement tractions|ฝึกดึงข้อ`,
+`Zieh dich hoch, um zu starten|Pull yourself up to start|Sube para empezar|Tirati su per iniziare|Hisse-toi pour commencer|ดึงตัวขึ้นเพื่อเริ่ม`,
+`Von unten nach oben wischen|Swipe from bottom to top|Desliza de abajo hacia arriba|Scorri dal basso verso l'alto|Glisse de bas en haut|ปัดจากล่างขึ้นบน`,
+`Körpergewicht (kg)|Body weight (kg)|Peso corporal (kg)|Peso corporeo (kg)|Poids du corps (kg)|น้ำหนักตัว (กก.)`,
+`Zusatzgewicht (kg, leer = 0)|Extra weight (kg, empty = 0)|Peso extra (kg, vacío = 0)|Peso aggiuntivo (kg, vuoto = 0)|Poids additionnel (kg, vide = 0)|น้ำหนักเพิ่ม (กก., ว่าง = 0)`,
+`Dauer Seilspringen (Minuten, 0 = überspringen)|Jump rope duration (minutes, 0 = skip)|Duración de la comba (minutos, 0 = omitir)|Durata corda (minuti, 0 = salta)|Durée corde à sauter (minutes, 0 = passer)|เวลากระโดดเชือก (นาที, 0 = ข้าม)`,
+`Dauer pro Klimmzugsatz (Minuten)|Duration per pull-up set (minutes)|Duración por serie de dominadas (minutos)|Durata per serie di trazioni (minuti)|Durée par série de tractions (minutes)|เวลาต่อเซตดึงข้อ (นาที)`,
+`Training starten|Start training|Empezar entrenamiento|Inizia allenamento|Démarrer l'entraînement|เริ่มฝึก`,
+`Bitte Körpergewicht eingeben.|Please enter your body weight.|Introduce tu peso corporal.|Inserisci il tuo peso corporeo.|Saisis ton poids du corps.|กรุณากรอกน้ำหนักตัว`,
+`Warm-up|Warm-up|Calentamiento|Riscaldamento|Échauffement|วอร์มอัพ`,`Abschluss|Finish|Final|Finale|Final|รอบสุดท้าย`,
+`Seilspringen|Jump rope|Saltar a la comba|Salto con la corda|Corde à sauter|กระโดดเชือก`,`Überspringen|Skip|Omitir|Salta|Passer|ข้าม`,`Abbrechen|Cancel|Cancelar|Annulla|Annuler|ยกเลิก`,
+`Zeit antippen zum Pausieren|Tap the time to pause|Toca el tiempo para pausar|Tocca il tempo per fare pausa|Touche le temps pour mettre en pause|แตะเวลาเพื่อหยุดชั่วคราว`,
+`Klimmzüge|Pull-ups|Dominadas|Trazioni|Tractions|ดึงข้อ`,
+`Zufällige Griff-Reihenfolge für {0} Sätze|Random grip order for {0} sets|Orden aleatorio de agarres para {0} series|Ordine casuale delle prese per {0} serie|Ordre aléatoire des prises pour {0} séries|ลำดับท่าจับแบบสุ่มสำหรับ {0} เซต`,
+`Griffe anpassen|Adjust grips|Ajustar agarres|Modifica prese|Ajuster les prises|ปรับท่าจับ`,`Reihenfolge generieren|Generate order|Generar orden|Genera ordine|Générer l'ordre|สุ่มลำดับ`,
+`Antippen zum Streichen oder Zurückholen|Tap to cross out or restore|Toca para tachar o restaurar|Tocca per barrare o ripristinare|Touche pour barrer ou rétablir|แตะเพื่อขีดฆ่าหรือเรียกคืน`,
+`Reihenfolge|Order|Orden|Ordine|Ordre|ลำดับ`,`Neu würfeln|Shuffle again|Mezclar de nuevo|Rimescola|Mélanger à nouveau|สุ่มใหม่`,
+`Satz {0} von {1}|Set {0} of {1}|Serie {0} de {1}|Serie {0} di {1}|Série {0} sur {1}|เซต {0} จาก {1}`,`Nächster Satz|Next set|Siguiente serie|Serie successiva|Série suivante|เซตถัดไป`,
+`Satz {0} - sauber geschafft|Set {0} - completed cleanly|Serie {0} - hecha sin problemas|Serie {0} - completata bene|Série {0} - réussie proprement|เซต {0} - ทำได้สมบูรณ์`,
+`Satz {0} - gerade so geschafft|Set {0} - just made it|Serie {0} - por los pelos|Serie {0} - appena riuscita|Série {0} - tout juste réussie|เซต {0} - ทำได้อย่างฉิวเฉียด`,
+`Satz {0} - nicht geschafft|Set {0} - not completed|Serie {0} - no completada|Serie {0} - non riuscita|Série {0} - non réussie|เซต {0} - ทำไม่สำเร็จ`,
+`Liegestütze|Push-ups|Flexiones|Flessioni|Pompes|วิดพื้น`,
+`Ein Satz – hol alles raus! Kein Timer.|One set – give it everything! No timer.|Una serie: ¡da todo! Sin temporizador.|Una serie: dai tutto! Nessun timer.|Une série : donne tout ! Pas de minuteur.|หนึ่งเซต – ทุ่มสุดตัว! ไม่มีตัวจับเวลา`,
+`Geschaffte Wiederholungen|Repetitions completed|Repeticiones completadas|Ripetizioni completate|Répétitions réalisées|จำนวนครั้งที่ทำได้`,
+`Fertig – weiter zum Seilspringen|Done – on to jump rope|Listo – a la comba|Fatto – alla corda|Terminé – direction la corde|เสร็จแล้ว – ไปกระโดดเชือกต่อ`,
+`Training abgeschlossen 💪|Training complete 💪|Entrenamiento completado 💪|Allenamento completato 💪|Entraînement terminé 💪|ฝึกเสร็จสิ้น 💪`,
+`Neues Training|New training|Nuevo entrenamiento|Nuovo allenamento|Nouvel entraînement|เริ่มการฝึกใหม่`,
+`geschätzter Verbrauch|estimated burn|consumo estimado|consumo stimato|dépense estimée|การเผาผลาญโดยประมาณ`,`Gewicht|Weight|Peso|Peso|Poids|น้ำหนัก`,
+`Klimmzug-Sätze|Pull-up sets|Series de dominadas|Serie di trazioni|Séries de tractions|เซตดึงข้อ`,`Kalorien|Calories|Calorías|Calorie|Calories|แคลอรี่`,
+`Tippe auf einen Tag mit Punkt für die Auswertung.|Tap a day with a dot to see the results.|Toca un día con punto para ver el resultado.|Tocca un giorno con il punto per vedere il risultato.|Touche un jour avec un point pour voir le bilan.|แตะวันที่มีจุดเพื่อดูผลสรุป`,
+`Kein Training an diesem Tag.|No training on this day.|Ningún entrenamiento este día.|Nessun allenamento in questo giorno.|Aucun entraînement ce jour-là.|ไม่มีการฝึกในวันนี้`,
+`Bearbeiten|Edit|Editar|Modifica|Modifier|แก้ไข`,`Löschen|Delete|Eliminar|Elimina|Supprimer|ลบ`,
+`Training bearbeiten|Edit training|Editar entrenamiento|Modifica allenamento|Modifier l'entraînement|แก้ไขการฝึก`,
+`Zusatzgewicht (kg)|Extra weight (kg)|Peso extra (kg)|Peso aggiuntivo (kg)|Poids additionnel (kg)|น้ำหนักเพิ่ม (กก.)`,
+`Seilspringen je Runde (Min)|Jump rope per round (min)|Comba por ronda (min)|Corda per round (min)|Corde par tour (min)|กระโดดเชือกต่อรอบ (นาที)`,
+`Liegestütze (Wdh.)|Push-ups (reps)|Flexiones (rep.)|Flessioni (rip.)|Pompes (rép.)|วิดพื้น (ครั้ง)`,
+`Sätze (Felder antippen zum Ändern)|Sets (tap boxes to change)|Series (toca las casillas para cambiar)|Serie (tocca le caselle per cambiare)|Séries (touche les cases pour modifier)|เซต (แตะช่องเพื่อเปลี่ยน)`,
+`Speichern|Save|Guardar|Salva|Enregistrer|บันทึก`,
+`Keine Trainings in diesem Monat.|No trainings this month.|Sin entrenamientos este mes.|Nessun allenamento in questo mese.|Aucun entraînement ce mois-ci.|ไม่มีการฝึกในเดือนนี้`,
+`Trainings|Trainings|Entrenamientos|Allenamenti|Entraînements|ครั้งที่ฝึก`,`kcal gesamt|kcal total|kcal en total|kcal totali|kcal au total|กิโลแคลอรีรวม`,
+`sauber geschafft|completed cleanly|hechas sin problemas|completate bene|réussies proprement|ทำได้สมบูรณ์`,
+`Klimmzüge pro Training|Pull-ups per training|Dominadas por entrenamiento|Trazioni per allenamento|Tractions par entraînement|ดึงข้อต่อการฝึก`,
+`Liegestütze pro Training|Push-ups per training|Flexiones por entrenamiento|Flessioni per allenamento|Pompes par entraînement|วิดพื้นต่อการฝึก`,
+`Kalorien pro Training (kcal)|Calories per training (kcal)|Calorías por entrenamiento (kcal)|Calorie per allenamento (kcal)|Calories par entraînement (kcal)|แคลอรี่ต่อการฝึก (kcal)`,
+`Leistung pro Griff|Performance per grip|Rendimiento por agarre|Prestazione per presa|Performance par prise|ผลงานแต่ละท่าจับ`,
+`{0} · {1} % sauber|{0} · {1} % clean|{0} · {1} % limpio|{0} · {1} % pulito|{0} · {1} % propre|{0} · สมบูรณ์ {1} %`,
+`grün sauber · orange gerade so · rot nicht geschafft|green clean · orange just made it · red not completed|verde limpio · naranja por los pelos · rojo no completado|verde pulito · arancione appena riuscito · rosso non riuscito|vert propre · orange tout juste · rouge raté|เขียว สมบูรณ์ · ส้ม ฉิวเฉียด · แดง ไม่สำเร็จ`,
+`Einstellungen|Settings|Ajustes|Impostazioni|Réglages|ตั้งค่า`,`Sprache|Language|Idioma|Lingua|Langue|ภาษา`,`Design|Design|Diseño|Design|Design|ธีม`,
+`Zum Darkmode wechseln|Switch to dark mode|Cambiar a modo oscuro|Passa alla modalità scura|Passer en mode sombre|เปลี่ยนเป็นโหมดมืด`,
+`Zum hellen Modus wechseln|Switch to light mode|Cambiar a modo claro|Passa alla modalità chiara|Passer en mode clair|เปลี่ยนเป็นโหมดสว่าง`,
+`Akzentfarbe|Accent color|Color de acento|Colore di accento|Couleur d'accent|สีเน้น`,
+`Mit dem Finger über den Ring fahren|Slide your finger around the ring|Desliza el dedo por el anillo|Scorri il dito sull'anello|Fais glisser ton doigt sur l'anneau|ลากนิ้วไปตามวงแหวน`,
+`Fertig|Done|Listo|Fatto|Terminé|เสร็จสิ้น`,`Training beenden?|End training?|¿Terminar el entrenamiento?|Terminare l'allenamento?|Terminer l'entraînement ?|จบการฝึกหรือไม่?`,
+`Du kehrst zum Startbildschirm zurück. Der Fortschritt dieses Trainings geht verloren.|You will return to the start screen. The progress of this training will be lost.|Volverás a la pantalla de inicio. Se perderá el progreso de este entrenamiento.|Tornerai alla schermata iniziale. I progressi di questo allenamento andranno persi.|Tu retournes à l'écran d'accueil. La progression de cet entraînement sera perdue.|คุณจะกลับไปหน้าเริ่มต้น ความคืบหน้าของการฝึกนี้จะหายไป`,
+`Beenden|End|Terminar|Termina|Terminer|จบ`,`Weiter trainieren|Keep training|Seguir entrenando|Continua|Continuer|ฝึกต่อ`,
+`Training löschen?|Delete training?|¿Eliminar el entrenamiento?|Eliminare l'allenamento?|Supprimer l'entraînement ?|ลบการฝึกนี้หรือไม่?`,
+`Dieses Training wird endgültig aus dem Kalender entfernt.|This training will be permanently removed from the calendar.|Este entrenamiento se eliminará definitivamente del calendario.|Questo allenamento verrà rimosso definitivamente dal calendario.|Cet entraînement sera définitivement supprimé du calendrier.|การฝึกนี้จะถูกลบออกจากปฏิทินอย่างถาวร`,
+`Behalten|Keep|Conservar|Mantieni|Garder|เก็บไว้`,
+`Mo|Mo|L|Lu|Lu|จ.`,`Di|Tu|M|Ma|Ma|อ.`,`Mi|We|X|Me|Me|พ.`,`Do|Th|J|Gi|Je|พฤ.`,`Fr|Fr|V|Ve|Ve|ศ.`,`Sa|Sa|S|Sa|Sa|ส.`,`So|Su|D|Do|Di|อา.`,
+`Hallo, {0}!|Hello, {0}!|¡Hola, {0}!|Ciao, {0}!|Salut, {0} !|สวัสดี {0}!`,`Analyse für {0}|Analysis for {0}|Análisis de {0}|Analisi di {0}|Analyse de {0}|วิเคราะห์ของ {0}`,`Profil|Profile|Perfil|Profilo|Profil|โปรไฟล์`,`Name|Name|Nombre|Nome|Nom|ชื่อ`,
+`Minigame|Minigame|Minijuego|Minigioco|Mini-jeu|มินิเกม`,`Highscore: {0}|Highscore: {0}|Récord: {0}|Record: {0}|Record : {0}|คะแนนสูงสุด: {0}`,`Zieh dich immer wieder hoch!|Keep pulling yourself up!|¡Sigue subiendo!|Continua a tirarti su!|Continue à te hisser !|ดึงตัวขึ้นซ้ำไปเรื่อย ๆ!`].map(r=>r.split('|'));
+const LG=['de','en','es','it','fr','th'],KM=new Map(TR.map((r,i)=>[r[0],i])),RX=TR.map((r,i)=>r[0].includes('{')?[new RegExp('^'+r[0].replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\d\}/g,'(.+?)')+'$'),i]:0).filter(Boolean);
 function tx(s){const l=ui.lang;if(l==='de')return s;const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2],k=LG.indexOf(l);
  if(KM.has(c))return m[1]+TR[KM.get(c)][k]+m[3];
  for(const[r,j]of RX){const x=c.match(r);if(x){let o=TR[j][k];x.slice(1).forEach((v,n)=>o=o.replace('{'+n+'}',v));return m[1]+o+m[3]}}return s}
@@ -286,15 +286,15 @@ function rep(){G.n++;const s=$('#gs');if(s){s.textContent=G.n;s.animate([{transf
  if(G.n>HS){HS=G.n;ls.set('kt_hs',HS);const h=$('#gh');if(h)h.textContent=tx('Highscore: '+HS)}
  try{navigator.vibrate&&navigator.vibrate(G.n%100===0?[60,40,60,40,120]:G.n%10===0?[40,30,40]:12)}catch(e){}
  if(G.n%100===0)fx(1);else if(G.n%10===0)fx(0)}
-function fx(big){const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:15;pointer-events:none;overflow:hidden';document.body.appendChild(o);
- const r=$('#gf').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.4,W=innerWidth,H=innerHeight;
+function fx(big,el,txt){const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:15;pointer-events:none;overflow:hidden';document.body.appendChild(o);
+ const r=$(el||'#gf').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.4,W=innerWidth,H=innerHeight;
  const add=(css,kf,ms,ease)=>{const e=document.createElement('div');e.style.cssText='position:absolute;'+css;o.appendChild(e);e.animate(kf,{duration:ms,easing:ease||'ease-out',fill:'forwards'});return e};
  const col=()=>'hsl('+(ui.hue+Math.random()*50-25)+',80%,'+(42+Math.random()*28)+'%)';
  if(big)add('inset:0;background:radial-gradient(circle at '+cx+'px '+cy+'px,var(--red),transparent 70%)',[{opacity:.55},{opacity:0}],1400);
  for(let k=0;k<(big?3:1);k++)add('left:'+cx+'px;top:'+cy+'px;width:60px;height:60px;margin:-30px;border-radius:50%;border:'+(big?8:5)+'px solid var(--red)',[{transform:'scale(.3)',opacity:1},{transform:'scale('+(big?14:7)+')',opacity:0}],(big?1000:700)+k*250,'cubic-bezier(.2,.7,.3,1)');
  for(let i=0,N=big?110:26;i<N;i++){const an=Math.random()*6.283,d=(big?160:90)+Math.random()*(big?Math.max(W,H)*.5:120),sz=(big?6:5)+Math.random()*(big?10:7);
   add('left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;border-radius:'+(Math.random()<.5?'50%':'2px')+';background:'+col(),[{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+Math.cos(an)*d+'px,'+(Math.sin(an)*d+(big?120:60))+'px) rotate('+Math.random()*540+'deg)',opacity:0}],(big?1500:900)+Math.random()*400,'cubic-bezier(.1,.8,.3,1)')}
- add('left:0;right:0;top:'+(cy-40)+'px;text-align:center;font-size:'+(big?96:54)+'px;font-weight:900;color:var(--red);text-shadow:0 0 '+(big?30:14)+'px var(--red)',[{transform:'scale(.4)',opacity:0},{transform:'scale(1.15)',opacity:1,offset:.3},{transform:'translateY(-'+(big?60:40)+'px) scale(1)',opacity:0}],big?1500:900).textContent=G.n+'!';
+ add('left:0;right:0;top:'+(cy-40)+'px;text-align:center;font-size:'+(big?96:54)+'px;font-weight:900;color:var(--red);text-shadow:0 0 '+(big?30:14)+'px var(--red)',[{transform:'scale(.4)',opacity:0},{transform:'scale(1.15)',opacity:1,offset:.3},{transform:'translateY(-'+(big?60:40)+'px) scale(1)',opacity:0}],big?1500:900).textContent=txt||G.n+'!';
  setTimeout(()=>o.remove(),2000)}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
