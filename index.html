@@ -320,7 +320,7 @@ function isPlanned(k,P){if(!P)return false;if(P.type==='custom')return P.custom.
  return P.type==='day'?P.days.includes((new Date(a[0],a[1]-1,a[2]).getDay()+6)%7):(P.every>0&&D%P.every===0)}
 function pd(i){const x=pl.days.indexOf(i);if(x>=0)pl.days.splice(x,1);else pl.days.push(i);render()}
 function pc(k){const x=pl.custom.indexOf(k);if(x>=0)pl.custom.splice(x,1);else pl.custom.push(k);render()}
-function savePlan(){ls.set('kt_plan',{type:pl.type,start:key(new Date()),days:[...pl.days],every:Math.max(1,Math.round(pl.every)||1),custom:[...pl.custom]});pmsg=true;render()}
+function savePlan(){ls.set('kt_plan',{type:pl.type,start:key(new Date()),days:[...pl.days],every:Math.max(1,Math.round(pl.every)||1),custom:[...pl.custom]});pmsg=false;sopen='';render()}
 function delPlan(){ls.set('kt_plan',null);pl={type:'day',days:[],every:3,custom:[]};render()}
 function miniCal(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),off=(new Date(y,m,1).getDay()+6)%7,len=new Date(y,m+1,0).getDate();
  let h='<div style="margin:12px 0 2px"><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b></div><div class="mut" style="margin-bottom:8px">Tage in diesem Monat antippen</div><div class="cal">';
