@@ -265,7 +265,8 @@ const TR=[
 `Behalten|Keep|Conservar|Mantieni|Garder|เก็บไว้`,
 `Mo|Mo|L|Lu|Lu|จ.`,`Di|Tu|M|Ma|Ma|อ.`,`Mi|We|X|Me|Me|พ.`,`Do|Th|J|Gi|Je|พฤ.`,`Fr|Fr|V|Ve|Ve|ศ.`,`Sa|Sa|S|Sa|Sa|ส.`,`So|Su|D|Do|Di|อา.`,
 `Hallo, {0}!|Hello, {0}!|¡Hola, {0}!|Ciao, {0}!|Salut, {0} !|สวัสดี {0}!`,`Analyse für {0}|Analysis for {0}|Análisis de {0}|Analisi di {0}|Analyse de {0}|วิเคราะห์ของ {0}`,`Profil|Profile|Perfil|Profilo|Profil|โปรไฟล์`,`Name|Name|Nombre|Nome|Nom|ชื่อ`,
-`Minigame|Minigame|Minijuego|Minigioco|Mini-jeu|มินิเกม`,`Highscore: {0}|Highscore: {0}|Récord: {0}|Record: {0}|Record : {0}|คะแนนสูงสุด: {0}`,`Zieh dich immer wieder hoch!|Keep pulling yourself up!|¡Sigue subiendo!|Continua a tirarti su!|Continue à te hisser !|ดึงตัวขึ้นซ้ำไปเรื่อย ๆ!`].map(r=>r.split('|'));
+`Minigame|Minigame|Minijuego|Minigioco|Mini-jeu|มินิเกม`,`Highscore: {0}|Highscore: {0}|Récord: {0}|Record: {0}|Record : {0}|คะแนนสูงสุด: {0}`,`Zieh dich immer wieder hoch!|Keep pulling yourself up!|¡Sigue subiendo!|Continua a tirarti su!|Continue à te hisser !|ดึงตัวขึ้นซ้ำไปเรื่อย ๆ!`,
+`Schwierigkeit|Difficulty|Dificultad|Difficoltà|Difficulté|ความยาก`,`Zurücksetzen|Reset|Reiniciar|Reimposta|Réinitialiser|รีเซ็ต`].map(r=>r.split('|'));
 const LG=['de','en','es','it','fr','th'],KM=new Map(TR.map((r,i)=>[r[0],i])),RX=TR.map((r,i)=>r[0].includes('{')?[new RegExp('^'+r[0].replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\d\}/g,'(.+?)')+'$'),i]:0).filter(Boolean);
 function tx(s){const l=ui.lang;if(l==='de')return s;const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2],k=LG.indexOf(l);
  if(KM.has(c))return m[1]+TR[KM.get(c)][k]+m[3];
@@ -276,13 +277,18 @@ function applyLang(){GRIPS.splice(1,7,...GR[ui.lang]);document.documentElement.l
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function greet(){return ui.name?'<div class="big" style="font-size:30px;margin-bottom:6px">Hallo, '+esc(ui.name)+'!</div>':''}
 let G={p:0,n:0,armed:true},HS=ls.get('kt_hs',0);
-function gameView(){return '<div id="gp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><div id="gs" class="kc" style="font-size:76px;line-height:1">'+G.n+'</div><div id="gf" style="width:100%;max-width:300px;margin:10px 0"></div><div class="sub">Zieh dich immer wieder hoch!</div><div id="gh" class="big" style="margin-top:14px">Highscore: '+HS+'</div></div>'}
-function initGame(){const a=$('#gp'),f=$('#gf');let y0=null,p0=0,t=null;
- const set=v=>{G.p=v;f.innerHTML=fig(v)},chk=()=>{if(G.p<=.3)G.armed=true;else if(G.p>=.9&&G.armed){G.armed=false;rep()}};set(G.p);
- a.onpointerdown=e=>{clearInterval(t);a.setPointerCapture(e.pointerId);y0=e.clientY;p0=G.p};
- a.onpointermove=e=>{if(y0===null)return;const raw=p0+(y0-e.clientY)/230,c=Math.max(0,Math.min(1,raw));if(raw!==c)y0=e.clientY+(c-p0)*230;set(c);chk()};
- a.onpointerup=a.onpointercancel=()=>{y0=null;clearInterval(t);t=setInterval(()=>{if(G.p<=.02){clearInterval(t);set(0);chk();return}set(G.p*.86);chk()},16)}}
-function rep(){G.n++;const s=$('#gs');if(s){s.textContent=G.n;s.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:200})}
+function gameView(){return '<div id="gp" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;text-align:center"><div id="gs" class="kc" style="font-size:76px;line-height:1">'+G.n+'</div><div style="width:60%;max-width:200px;margin:8px auto 0"><div class="mut" style="font-size:12px">Schwierigkeit</div><div class="bar" id="gd"><i style="width:'+Math.round(dif()*100)+'%"></i></div></div><div id="gf" style="width:100%;max-width:300px;margin:10px 0"></div><div class="sub">Zieh dich immer wieder hoch!</div><div id="gh" class="big" style="margin-top:14px">Highscore: '+HS+'</div><button class="btn ghost" style="width:auto;padding:10px 20px;margin-top:6px" onclick="G.n=0;G.p=0;G.armed=true;render()">Zurücksetzen</button></div>'}
+function dif(){return 1-Math.exp(-G.n/45)}
+function initGame(){const a=$('#gp'),f=$('#gf');let ly=null,t=null,lt=0;
+ const set=v=>{G.p=Math.max(0,Math.min(1,v));f.innerHTML=fig(G.p)};
+ const chk=()=>{const D=dif();if(G.p<=.3-.18*D)G.armed=true;else if(G.p>=.9+.07*D&&G.armed){G.armed=false;rep()}};
+ const loop=()=>{if(!f.isConnected){clearInterval(t);ly=null;return}const now=performance.now(),dt=Math.min(.05,(now-lt)/1000);lt=now;
+  if(ly!==null)set(G.p-.6*dif()*dt);else{if(G.p<=.02){clearInterval(t);set(0);chk();return}set(G.p*.86)}chk()};
+ set(G.p);
+ a.onpointerdown=e=>{if(e.target.closest('button'))return;a.setPointerCapture(e.pointerId);ly=e.clientY;lt=performance.now();clearInterval(t);t=setInterval(loop,16)};
+ a.onpointermove=e=>{if(ly===null)return;set(G.p+(ly-e.clientY)/(230+230*dif()));ly=e.clientY;chk()};
+ a.onpointerup=a.onpointercancel=()=>{ly=null}}
+function rep(){G.n++;const bd=$('#gd i');if(bd)bd.style.width=Math.round(dif()*100)+'%';const s=$('#gs');if(s){s.textContent=G.n;s.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:200})}
  if(G.n>HS){HS=G.n;ls.set('kt_hs',HS);const h=$('#gh');if(h)h.textContent=tx('Highscore: '+HS)}
  try{navigator.vibrate&&navigator.vibrate(G.n%100===0?[60,40,60,40,120]:G.n%10===0?[40,30,40]:12)}catch(e){}
  if(G.n%100===0)fx(1);else if(G.n%10===0)fx(0)}
