@@ -74,7 +74,7 @@ nav button{padding:15px 2px;font-size:14px}
 #vp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:58px;right:116px;height:42px;display:none;align-items:center;z-index:6}
 #vs{-webkit-appearance:none;appearance:none;width:100%;height:10px;margin:0;padding:0;border:0;border-radius:6px;background:linear-gradient(to right,var(--red) var(--v,100%),var(--line) var(--v,100%));outline:none}
 #vs::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--red);border:3px solid var(--bg);box-shadow:0 0 0 1.5px var(--red)}
-h1.c{text-align:center;padding-left:90px}
+h1.c{text-align:center;padding:0;margin:2px auto 16px;max-width:calc(100% - 190px)}
 label.fr{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink);margin-bottom:18px}
 .fi{display:flex;align-items:center;gap:12px;flex:1;min-width:0}.fi svg{width:32px;height:32px;flex:none;color:var(--red)}
 .fr input{width:96px;flex:none;margin:0;text-align:center;font-size:18px}
@@ -350,9 +350,9 @@ function planUI(){const pm=pmsg;pmsg=false;
  else if(pl.type==='rhythm')h+='<label style="margin-top:12px">Alle wie viele Tage?<input type="number" inputmode="numeric" min="1" value="'+pl.every+'" oninput="pl.every=parseInt(this.value)||0"></label><div class="mut" style="margin-bottom:8px">Der Rhythmus beginnt heute.</div>';
  else h+=miniCal();
  return h+'<button class="btn" onclick="savePlan()">Plan speichern</button>'+(ls.get('kt_plan',null)?'<button class="btn ghost" onclick="delPlan()">Plan löschen</button>':'')}
-const IC=['<circle cx="12" cy="5" r="2.5"/><path d="M12 8v7M7 11h10M12 15l-3 6M12 15l3 6"/>','<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>','<path d="M5 14c0-12 14-12 14 0"/><rect x="3.5" y="14" width="3" height="7" rx="1.5"/><rect x="17.5" y="14" width="3" height="7" rx="1.5"/>','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'];
+const IC=['<circle cx="12" cy="5" r="2.5"/><path d="M12 8v7M7 11h10M12 15l-3 6M12 15l3 6"/>','<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>','<path d="M5 3l1 6.5M19 3l-1 6.5" stroke-width="3.2"/><path d="M6 9.5C5 23 19 23 18 9.5"/>','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'];
 function frow(i,t,inp){return '<label class="fr"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[i]+'</svg><span>'+t+'</span></span>'+inp+'</label>'}
-function nextInfo(){return '<div class="rate"><div class="card" style="text-align:center;margin:0"><div class="mut">Als Nächstes</div><div class="big" style="margin:2px 0 0">'+(S.i<S.order.length-1?GRIPS[S.order[S.i+1]]:'Liegestütze')+'</div></div></div>'}
+function nextInfo(){return '<div class="rate big" style="text-align:center;margin-bottom:0"><span style="color:var(--mut);font-weight:400">Als Nächstes</span><span>: </span><span>'+(S.i<S.order.length-1?GRIPS[S.order[S.i+1]]:'Liegestütze')+'</span></div>'}
 ui.vol=ui.vol??1;let vt=null;
 function volUI(){const s=$('#vs');s.value=Math.round(ui.vol*100);s.style.setProperty('--v',s.value+'%');$('#w1').style.display=ui.vol>0?'':'none';$('#w2').style.display=ui.vol>.5?'':'none';$('#wx').style.display=ui.vol>0?'none':''}
 function vclose(){clearTimeout(vt);vt=setTimeout(()=>{$('#vp').style.display='none'},3500)}
