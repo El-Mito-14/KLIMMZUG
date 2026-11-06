@@ -18,7 +18,7 @@ input:focus{outline:none;border-color:var(--red)}
 .btn{width:100%;padding:16px;border:0;border-radius:12px;background:var(--red);color:#fff;font-size:18px;font-weight:700;margin-top:12px}
 .btn.alt{background:var(--ink);color:var(--bg)}.btn.ghost{background:none;color:var(--mut);font-size:15px;font-weight:600}
 .sub{text-align:center;color:var(--mut);font-size:15px}.big{text-align:center;font-size:24px;font-weight:700;margin:6px 0}
-.rw{cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;width:min(72vw,270px);margin:12px auto}.rw svg{width:100%;display:block}
+.rw{cursor:pointer;-webkit-tap-highlight-color:transparent;position:relative;width:min(78vw,300px);margin:12px auto}.rw svg{width:100%;display:block}
 .bgc{fill:none;stroke:var(--line);stroke-width:14}.fg{fill:none;stroke:var(--red);stroke-width:14;stroke-dasharray:754 754}
 .tm{color:var(--red);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:700;font-variant-numeric:tabular-nums}
 .rate{margin-top:auto;padding-top:14px}.rate p{margin:0 0 8px;font-size:14px;color:var(--mut);text-align:center}
@@ -77,11 +77,11 @@ nav button{padding:15px 2px;font-size:14px}
 label.fr{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink);margin-bottom:18px}
 .fi{display:flex;align-items:center;gap:12px;flex:1;min-width:0}.fi svg{width:32px;height:32px;flex:none;color:var(--red)}
 .fr input{width:96px;flex:none;margin:0;text-align:center;font-size:18px}
-.np{cursor:pointer}input.np.act{border-color:var(--red)}
+.np{cursor:pointer;color:var(--red);font-weight:700}input.np.act{border-color:var(--red)}
 #kp{position:fixed;inset:0;z-index:30;display:none}#kp .kb{position:absolute;inset:0;background:#0006}
-.ks{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.ks{position:absolute;left:50%;transform:translateX(-50%);width:min(88vw,320px);bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);border:1.5px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 8px 28px #0004}
 .kd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding:0 4px}.kd span{color:var(--mut);font-size:14px}.kd b{font-size:30px;color:var(--red)}
-.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kg button{height:56px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font-size:24px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0}.kg button:active{background:var(--red);border-color:var(--red);color:#fff}
+.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kg button{height:52px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font-size:24px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0}.kg button:active{background:var(--red);border-color:var(--red);color:#fff}
 body.kp main{padding-bottom:390px}
 .iw{position:relative;flex:none;width:118px}.iw input{width:100%;padding-right:46px;text-align:right}
 .iw em{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--mut);font-size:15px;pointer-events:none}
@@ -154,7 +154,7 @@ function view(){
  if(p==='order'){
   if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für '+(7-off.length)+' Sätze</div>'+gripPanel()+'<button class="btn alt" style="margin-top:auto" onclick="showG=!showG;render()">Griffe anpassen</button><button class="btn" onclick="gen()">Reihenfolge generieren</button>';
   return '<h1>Reihenfolge</h1><ol>'+S.order.map(g=>'<li>'+GRIPS[g]+'</li>').join('')+'</ol><button class="btn alt" onclick="gen()">Neu würfeln</button><button class="btn" style="margin-top:auto" onclick="runSet()">Training starten</button>'}
- if(p==='set')return '<div class="sub" style="margin-top:46px">Satz '+(S.i+1)+' von '+S.order.length+'</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(getR(S.i).done?nextInfo():rbar(S.i));
+ if(p==='set')return '<div class="sub" style="margin-top:46px">Satz '+(S.i+1)+' von '+S.order.length+'</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" style="margin-top:26px" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(getR(S.i).done?nextInfo():rbar(S.i));
  if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" class="np" data-np="i" readonly inputmode="none" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(S.order.length-1);
  if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
 function calView(){if(ed)return editView();
@@ -360,7 +360,7 @@ function planUI(){const pm=pmsg;pmsg=false;
  else if(pl.type==='rhythm')h+='<label style="margin-top:12px">Alle wie viele Tage?<input class="np" data-np="i" readonly inputmode="none" value="'+pl.every+'" oninput="pl.every=parseInt(this.value)||0"></label><div class="mut" style="margin-bottom:8px">Der Rhythmus beginnt heute.</div>';
  else h+=miniCal();
  return h+'<button class="btn" onclick="savePlan()">Plan speichern</button>'+(ls.get('kt_plan',null)?'<button class="btn ghost" onclick="delPlan()">Plan löschen</button>':'')}
-const IC=['<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7.5 9.5a6 6 0 0 1 9 0"/><path d="M12 12.5l2.3-2.9"/>','<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>','<circle cx="12" cy="5.2" r="2"/><path d="M12 7.5v7M7 11.5l5-2 5 2M9.5 19l2.5-4.5 2.5 4.5"/><path d="M7 11.5C3-2 21-2 17 11.5"/>','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'];
+const IC=['<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7.5 9.5a6 6 0 0 1 9 0"/><path d="M12 12.5l2.3-2.9"/>','<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>','<circle cx="12" cy="8" r="1.8"/><path d="M12 9.8v6.7M7 13.8l5-2.3 5 2.3M9.7 21.2l2.3-4.7 2.3 4.7"/><path d="M7 13.8C3-2 21-2 17 13.8"/>','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'];
 function frow(i,t,inp,u){return '<label class="fr"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[i]+'</svg><span>'+t+'</span></span><span class="iw">'+inp.replace('<input ','<input class="np" data-np="d" readonly inputmode="none" ')+'<em>'+u+'</em></span></label>'}
 function nextInfo(){return '<div class="rate" style="text-align:center"><div style="font-size:15px;font-weight:600;color:var(--mut)">Als Nächstes</div><div class="big" style="margin:4px 0 0">'+(S.i<S.order.length-1?GRIPS[S.order[S.i+1]]:'Liegestütze')+'</div></div>'}
 ui.vol=ui.vol??1;let vt=null;
