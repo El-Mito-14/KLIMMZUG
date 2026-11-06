@@ -50,9 +50,9 @@ ol{padding-left:22px}ol li{padding:9px 0;border-bottom:1px solid var(--line);fon
 .kr{display:flex;justify-content:space-between;font-size:14px;margin-top:6px}.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--red)}
 #gear,#home,#vol{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:10px;z-index:5;width:42px;height:42px;border:0;background:none;font-size:26px;color:var(--ink);padding:0}
 #gear,#home,#vol{display:flex;align-items:center;justify-content:center}
-#home{right:54px}
+#home{right:98px}
 html,body{overscroll-behavior:none}main{overscroll-behavior:contain}
-main h1{padding-right:90px}
+main h1{padding-right:140px}
 #dlg{position:fixed;inset:0;z-index:20;background:#0009;display:flex;align-items:center;justify-content:center;padding:24px}
 .dg{background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:20px;padding:22px;width:100%;max-width:360px}
 .dg h2{margin:0 0 8px;font-size:20px}.dg p{margin:0 0 18px;color:var(--mut);font-size:15px;line-height:1.45}
@@ -70,14 +70,19 @@ nav button{padding:15px 2px;font-size:14px}
 .d.pk{box-shadow:inset 0 0 0 2px var(--red);font-weight:700}
 .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}.wk .pb{aspect-ratio:1;margin:0;padding:0;font-size:15px;display:flex;align-items:center;justify-content:center}
 #mc{touch-action:pan-y}.d:disabled{opacity:.45}
-#vol{left:10px;right:auto}
-#vp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:58px;right:116px;height:42px;display:none;align-items:center;z-index:6}
+#vol{right:54px}
+#vp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:12px;right:100px;height:42px;display:none;align-items:center;z-index:6}
 #vs{-webkit-appearance:none;appearance:none;width:100%;height:10px;margin:0;padding:0;border:0;border-radius:6px;background:linear-gradient(to right,var(--red) var(--v,100%),var(--line) var(--v,100%));outline:none}
 #vs::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--red);border:3px solid var(--bg);box-shadow:0 0 0 1.5px var(--red)}
-h1.c{text-align:center;padding:0;margin:34px 0 16px;width:100%}
 label.fr{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink);margin-bottom:18px}
 .fi{display:flex;align-items:center;gap:12px;flex:1;min-width:0}.fi svg{width:32px;height:32px;flex:none;color:var(--red)}
 .fr input{width:96px;flex:none;margin:0;text-align:center;font-size:18px}
+.np{cursor:pointer}input.np.act{border-color:var(--red)}
+#kp{position:fixed;inset:0;z-index:30;display:none}#kp .kb{position:absolute;inset:0;background:#0006}
+.ks{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-top:1.5px solid var(--line);border-radius:22px 22px 0 0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.kd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding:0 4px}.kd span{color:var(--mut);font-size:14px}.kd b{font-size:30px;color:var(--red)}
+.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kg button{height:56px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font-size:24px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0}.kg button:active{background:var(--red);border-color:var(--red);color:#fff}
+body.kp main{padding-bottom:390px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -142,14 +147,14 @@ function summary(s){const d=s.date.split('-').reverse().join('.'),tot=s.kcal||1,
  return h}
 function view(){
  const p=S.phase;if(p==='splash')return splash();
- if(p==='setup')return '<h1 class="c">Training</h1>'+frow(0,'Körpergewicht (kg)','<input id="w" inputmode="decimal" value="'+cfg.w+'">')+frow(1,'Zusatzgewicht (kg, leer = 0)','<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0">')+frow(2,'Dauer Seilspringen (Minuten, 0 = überspringen)','<input id="rope" inputmode="decimal" value="'+cfg.rope+'">')+frow(3,'Dauer pro Klimmzugsatz (Minuten)','<input id="set" inputmode="decimal" value="'+cfg.set+'">')+'<div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
- if(p==='warm'||p==='cool')return '<h1 class="c">'+(p==='warm'?'Warm-up':'Abschluss')+'</h1><div class="sub">Seilspringen</div>'+ring()+'<button class="btn ghost" onclick="skip()">Überspringen</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>';
+ if(p==='setup')return '<h1>Training</h1>'+frow(0,'Körpergewicht (kg)','<input id="w" inputmode="decimal" value="'+cfg.w+'">')+frow(1,'Zusatzgewicht (kg, leer = 0)','<input id="x" inputmode="decimal" value="'+cfg.x+'" placeholder="0">')+frow(2,'Dauer Seilspringen (Minuten, 0 = überspringen)','<input id="rope" inputmode="decimal" value="'+cfg.rope+'">')+frow(3,'Dauer pro Klimmzugsatz (Minuten)','<input id="set" inputmode="decimal" value="'+cfg.set+'">')+'<div id="msg" class="mut" style="color:var(--red)"></div><button class="btn" style="margin-top:auto" onclick="start()">Training starten</button>';
+ if(p==='warm'||p==='cool')return '<h1>'+(p==='warm'?'Warm-up':'Abschluss')+'</h1><div class="sub">Seilspringen</div>'+ring()+'<button class="btn ghost" onclick="skip()">Überspringen</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>';
  if(p==='order'){
-  if(!S.order)return '<h1 class="c">Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für '+(7-off.length)+' Sätze</div>'+gripPanel()+'<button class="btn alt" style="margin-top:auto" onclick="showG=!showG;render()">Griffe anpassen</button><button class="btn" onclick="gen()">Reihenfolge generieren</button>';
-  return '<h1 class="c">Reihenfolge</h1><ol>'+S.order.map(g=>'<li>'+GRIPS[g]+'</li>').join('')+'</ol><button class="btn alt" onclick="gen()">Neu würfeln</button><button class="btn" style="margin-top:auto" onclick="runSet()">Training starten</button>'}
+  if(!S.order)return '<h1>Klimmzüge</h1><div class="sub">Zufällige Griff-Reihenfolge für '+(7-off.length)+' Sätze</div>'+gripPanel()+'<button class="btn alt" style="margin-top:auto" onclick="showG=!showG;render()">Griffe anpassen</button><button class="btn" onclick="gen()">Reihenfolge generieren</button>';
+  return '<h1>Reihenfolge</h1><ol>'+S.order.map(g=>'<li>'+GRIPS[g]+'</li>').join('')+'</ol><button class="btn alt" onclick="gen()">Neu würfeln</button><button class="btn" style="margin-top:auto" onclick="runSet()">Training starten</button>'}
  if(p==='set')return '<div class="sub">Satz '+(S.i+1)+' von '+S.order.length+'</div><div class="big">'+GRIPS[S.order[S.i]]+'</div>'+ring()+'<button class="btn ghost" onclick="skip()">Nächster Satz</button><button class="btn ghost" onclick="cancel()">Abbrechen</button>'+(getR(S.i).done?nextInfo():rbar(S.i));
- if(p==='push')return '<h1 class="c">Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" type="number" inputmode="numeric" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(S.order.length-1);
- if(p==='done')return '<h1 class="c">Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
+ if(p==='push')return '<h1>Liegestütze</h1><div class="sub">Ein Satz – hol alles raus! Kein Timer.</div><label style="margin-top:20px">Geschaffte Wiederholungen<input id="pr" class="np" data-np="i" readonly inputmode="none" placeholder="0"></label><button class="btn" onclick="finishPush()">Fertig – weiter zum Seilspringen</button>'+rbar(S.order.length-1);
+ if(p==='done')return '<h1>Training abgeschlossen 💪</h1>'+summary(S.ses)+'<button class="btn" onclick="S={phase:\'setup\'};render()">Neues Training</button>'}
 function calView(){if(ed)return editView();
  const all=ls.get('kt_sessions',[]),days=new Set(all.map(s=>s.date)),P=ls.get('kt_plan',null),first=new Date(cal.y,cal.m,1),off=(first.getDay()+6)%7,len=new Date(cal.y,cal.m+1,0).getDate();
  const mn=first.toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'}),today=key(new Date());
@@ -164,7 +169,7 @@ function calView(){if(ed)return editView();
  return h}
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
-function render(){$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('#n4').className=tab==='game'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'flex';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';{const on=tab==='train'&&['warm','order','set','push','cool'].includes(S.phase);$('#vol').style.display=on?'flex':'none';if(!on)$('#vp').style.display='none'}
+function render(){closePad();$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('#n4').className=tab==='game'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'flex';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';
  const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView,game:gameView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();initMc();if(tab==='game')initGame();tr(m);tr($('nav'));m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
 let ui=ls.get('kt_ui',{dark:false,hue:0});
 function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
@@ -191,7 +196,7 @@ function initRing(){const w=$('#hw');if(!w)return;const mk=()=>{const a=ui.hue*M
 function del(id){ask('Training löschen?','Dieses Training wird endgültig aus dem Kalender entfernt.','Löschen',()=>{ls.set('kt_sessions',ls.get('kt_sessions',[]).filter(s=>s.id!==id));render()},'Behalten')}
 function edit(id){ed=JSON.parse(JSON.stringify(ls.get('kt_sessions',[]).find(s=>s.id===id)));render()}
 function cyc(i,k){const c=ed.ratings[i],m={g:'o',o:'r',r:null};c[k]=c[k]?m[c[k]]:'g';render()}
-function editView(){let h='<h1>Training bearbeiten</h1>'+[['w','Körpergewicht (kg)'],['x','Zusatzgewicht (kg)'],['rope','Seilspringen je Runde (Min)'],['push','Liegestütze (Wdh.)']].map(f=>'<label>'+f[1]+'<input inputmode="decimal" value="'+ed[f[0]]+'" oninput="ed.'+f[0]+'=parseFloat(this.value.replace(\',\',\'.\'))||0"></label>').join('')+'<h2>Sätze (Felder antippen zum Ändern)</h2>';
+function editView(){let h='<h1>Training bearbeiten</h1>'+[['w','Körpergewicht (kg)'],['x','Zusatzgewicht (kg)'],['rope','Seilspringen je Runde (Min)'],['push','Liegestütze (Wdh.)']].map(f=>'<label>'+f[1]+'<input class="np" data-np="d" readonly inputmode="none" value="'+ed[f[0]]+'" oninput="ed.'+f[0]+'=parseFloat(this.value.replace(\',\',\'.\'))||0"></label>').join('')+'<h2>Sätze (Felder antippen zum Ändern)</h2>';
  ed.order.forEach((g,i)=>{h+='<div class="row"><b>'+(i+1)+'. '+GRIPS[g]+'</b><div class="cells" style="flex:1">'+ed.ratings[i].map((c,k)=>'<button class="'+(c||'')+'" style="height:26px;font-size:12px" onclick="cyc('+i+','+k+')">'+(k+1)+'</button>').join('')+'</div></div>'});
  return h+'<button class="btn" onclick="saveEd()">Speichern</button><button class="btn ghost" onclick="ed=null;render()">Abbrechen</button>'}
 function saveEd(){calc(ed);const a=ls.get('kt_sessions',[]);a[a.findIndex(s=>s.id===ed.id)]=ed;ls.set('kt_sessions',a);ed=null;render()}
@@ -347,12 +352,12 @@ function miniCal(){const n=new Date(),v=cmv(),y=v.y,m=v.m,past=y<n.getFullYear()
 function planUI(){const pm=pmsg;pmsg=false;
  let h='<div class="seg">'+[['day','nach Tag'],['rhythm','nach Rhythmus'],['custom','individuell']].map(t=>'<button class="pb'+(pl.type===t[0]?' pk':'')+'" onclick="pl.type=\''+t[0]+'\';render()">'+t[1]+'</button>').join('')+'</div>';
  if(pl.type==='day')h+='<div class="wk">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map((n,i)=>'<button class="pb'+(pl.days.includes(i)?' pk':'')+'" onclick="pd('+i+')">'+n+'</button>').join('')+'</div>';
- else if(pl.type==='rhythm')h+='<label style="margin-top:12px">Alle wie viele Tage?<input type="number" inputmode="numeric" min="1" value="'+pl.every+'" oninput="pl.every=parseInt(this.value)||0"></label><div class="mut" style="margin-bottom:8px">Der Rhythmus beginnt heute.</div>';
+ else if(pl.type==='rhythm')h+='<label style="margin-top:12px">Alle wie viele Tage?<input class="np" data-np="i" readonly inputmode="none" value="'+pl.every+'" oninput="pl.every=parseInt(this.value)||0"></label><div class="mut" style="margin-bottom:8px">Der Rhythmus beginnt heute.</div>';
  else h+=miniCal();
  return h+'<button class="btn" onclick="savePlan()">Plan speichern</button>'+(ls.get('kt_plan',null)?'<button class="btn ghost" onclick="delPlan()">Plan löschen</button>':'')}
-const IC=['<circle cx="12" cy="5" r="2.5"/><path d="M12 8v7M7 11h10M12 15l-3 6M12 15l3 6"/>','<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>','<path d="M5 3l1 6.5M19 3l-1 6.5" stroke-width="3.2"/><path d="M6 9.5C5 23 19 23 18 9.5"/>','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'];
-function frow(i,t,inp){return '<label class="fr"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[i]+'</svg><span>'+t+'</span></span>'+inp+'</label>'}
-function nextInfo(){return '<div class="rate big" style="text-align:center;margin-bottom:0"><span style="color:var(--mut);font-weight:400">Als Nächstes</span><span>: </span><span>'+(S.i<S.order.length-1?GRIPS[S.order[S.i+1]]:'Liegestütze')+'</span></div>'}
+const IC=['<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7.5 9.5a6 6 0 0 1 9 0"/><path d="M12 12.5l2.3-2.9"/>','<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>','<circle cx="12" cy="5.2" r="2"/><path d="M12 7.5v7M7 11.5l5-2 5 2M9.5 19l2.5-4.5 2.5 4.5"/><path d="M7 11.5C3-2 21-2 17 11.5M7 11.5C3 26 21 26 17 11.5"/>','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'];
+function frow(i,t,inp){return '<label class="fr"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[i]+'</svg><span>'+t+'</span></span>'+inp.replace('<input ','<input class="np" data-np="d" readonly inputmode="none" ')+'</label>'}
+function nextInfo(){return '<div class="rate" style="text-align:center"><div style="font-size:15px;font-weight:600;color:var(--mut)">Als Nächstes</div><div class="big" style="margin:4px 0 0">'+(S.i<S.order.length-1?GRIPS[S.order[S.i+1]]:'Liegestütze')+'</div></div>'}
 ui.vol=ui.vol??1;let vt=null;
 function volUI(){const s=$('#vs');s.value=Math.round(ui.vol*100);s.style.setProperty('--v',s.value+'%');$('#w1').style.display=ui.vol>0?'':'none';$('#w2').style.display=ui.vol>.5?'':'none';$('#wx').style.display=ui.vol>0?'none':''}
 function vclose(){clearTimeout(vt);vt=setTimeout(()=>{$('#vp').style.display='none'},3500)}
@@ -360,6 +365,18 @@ function tv(){const p=$('#vp'),o=p.style.display==='flex';p.style.display=o?'non
 $('#vs').oninput=e=>{ui.vol=e.target.value/100;applyUI();volUI();vclose()};
 $('#vs').onchange=()=>{try{ac=ac||new AudioContext()}catch(e){}beep(1)};
 volUI();
+let kEl=null,kFresh=false;
+const dc=()=>['de','es','it','fr'].includes(ui.lang)?',':'.';
+document.body.insertAdjacentHTML('beforeend','<div id="kp"><div class="kb" onclick="closePad()"></div><div class="ks"><div class="kd"><span id="kl"></span><b id="kv"></b></div><div class="kg">'+['1','2','3','4','5','6','7','8','9'].map(n=>'<button onclick="kp(\''+n+'\')">'+n+'</button>').join('')+'<button id="kdot" onclick="kp(\',\')"></button><button onclick="kp(\'0\')">0</button><button onclick="kp(\'<\')" aria-label="Delete"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12z"/><path d="M13 9l4 6M17 9l-4 6"/></svg></button></div><button class="btn" onclick="closePad()">OK</button></div></div>');
+function kShow(){const v=kEl.value;$('#kv').textContent=(v===''?'0':v).replace('.',dc())}
+function openPad(el){kEl=el;kFresh=true;document.querySelectorAll('input.act').forEach(i=>i.classList.remove('act'));el.classList.add('act');
+ const lb=el.closest('label');$('#kl').textContent=lb?lb.innerText.trim():'';$('#kdot').textContent=dc();$('#kdot').style.visibility=el.dataset.np==='d'?'visible':'hidden';
+ document.body.classList.add('kp');$('#kp').style.display='block';kShow();setTimeout(()=>el.scrollIntoView({block:'center',behavior:'smooth'}),60)}
+function closePad(){if(kEl)kEl.classList.remove('act');kEl=null;$('#kp').style.display='none';document.body.classList.remove('kp')}
+function kp(k){if(!kEl)return;let v=kFresh&&k!=='<'?'':kEl.value;kFresh=false;
+ if(k==='<')v=v.slice(0,-1);else if(k===','){if(v.includes('.'))return;v=(v===''?'0':v)+'.'}else{if(v==='0')v='';if(v.length>=6)return;v+=k}
+ kEl.value=v;kEl.dispatchEvent(new Event('input',{bubbles:true}));kShow()}
+document.addEventListener('click',e=>{const t=e.target.closest?e.target.closest('input.np'):null;if(t)openPad(t)});
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
