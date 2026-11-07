@@ -168,11 +168,11 @@ function calView(){if(ed)return editView();
  h+='</div>';
  if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(s=>summary(s)+'<button class="btn alt" onclick="edit('+s.id+')">Bearbeiten</button><button class="btn ghost" onclick="del('+s.id+')">Löschen</button>').join('<hr>'):'<p class="sub" style="margin-top:20px">'+(isPlanned(sel,P)?'Für diesen Tag ist ein Training geplant.':'Kein Training an diesem Tag.')+'</p>'}
  else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit Punkt für die Auswertung.</p>';
- return h}
+ return '<div id="cv" style="flex:1;touch-action:pan-y">'+h+'</div>'}
 function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
 function pick(k){sel=sel===k?null:k;render()}
-function render(){closePad();$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('#n4').className=tab==='game'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'flex';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';
- const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView,game:gameView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();initMc();if(tab==='game')initGame();tr(m);tr($('nav'));m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
+function render(){closePad();$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('#n4').className=tab==='game'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'flex';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';{const on=tab!=='set'&&!(tab==='train'&&S.phase==='splash');$('#vol').style.display=on?'flex':'none';if(!on)$('#vp').style.display='none'}
+ const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView,game:gameView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();initMc();initCal();if(tab==='game')initGame();tr(m);tr($('nav'));m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
 let ui=ls.get('kt_ui',{dark:false,hue:0});
 function applyUI(){const d=document.documentElement;d.dataset.theme=ui.dark?'dark':'light';d.style.colorScheme=ui.dark?'dark':'light';d.style.setProperty('--red','hsl('+ui.hue+',70%,48%)');const m=document.querySelector('meta[name=theme-color]');if(m)m.content=ui.dark?'#2e2e30':'#ffffff';ls.set('kt_ui',ui)}
 function fig(p){const sy=112-p*78,o=26*p,ey=(30+sy)/2,s='stroke="var(--ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
@@ -382,6 +382,10 @@ function kp(k){if(!kEl)return;let v=kFresh&&k!=='<'?'':kEl.value;kFresh=false;
  if(k==='<')v=v.slice(0,-1);else if(k===','){if(v.includes('.'))return;v=(v===''?'0':v)+'.'}else{if(v==='0')v='';if(v.length>=6)return;v+=k}
  kEl.value=v;kEl.dispatchEvent(new Event('input',{bubbles:true}));kShow()}
 document.addEventListener('click',e=>{const t=e.target.closest?e.target.closest('input.np'):null;if(t)openPad(t)});
+function initCal(){const e=$('#cv');if(!e)return;let x0=null,y0=null;
+ e.onpointerdown=ev=>{x0=ev.clientX;y0=ev.clientY};
+ e.onpointerup=ev=>{if(x0===null)return;const dx=ev.clientX-x0,dy=ev.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)mv(dx<0?1:-1)};
+ e.onpointercancel=()=>{x0=null}}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
