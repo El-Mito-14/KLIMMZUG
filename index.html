@@ -86,7 +86,7 @@ body.kp main{padding-bottom:390px}
 .iw{position:relative;flex:none;width:106px}.iw input{width:100%;padding-right:46px;text-align:right}
 .iw em{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--mut);font-size:15px;pointer-events:none}
 main{overflow-x:hidden}
-.card{overflow:hidden}
+.card{flex-shrink:0}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -353,9 +353,9 @@ function initMc(){const e=$('#mc');if(!e)return;let x0=null,y0=null;
  e.onpointerup=ev=>{if(x0===null)return;const dx=ev.clientX-x0,dy=ev.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)vm(dx<0?1:-1)};
  e.onpointercancel=()=>{x0=null}}
 function miniCal(){const n=new Date(),v=cmv(),y=v.y,m=v.m,past=y<n.getFullYear()||(y===n.getFullYear()&&m<n.getMonth()),off=(new Date(y,m,1).getDay()+6)%7,len=new Date(y,m+1,0).getDate();
- let h='<div id="mc"><div class="mh" style="margin:8px 0"><button onclick="vm(-1)">‹</button><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b><button onclick="vm(1)">›</button></div><div class="cal">';
+ let h='<div style="overflow:hidden"><div id="mc"><div class="mh" style="margin:8px 0"><button onclick="vm(-1)">‹</button><b>'+new Date(y,m,1).toLocaleDateString(LOC[ui.lang],{month:'long',year:'numeric'})+'</b><button onclick="vm(1)">›</button></div><div class="cal">';
  ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d=>h+='<div class="h">'+d+'</div>');for(let i=0;i<off;i++)h+='<div></div>';
- for(let d=1;d<=len;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);h+='<button class="d'+(pl.custom.includes(k)?' pk':'')+'"'+(past?' disabled':'')+' onclick="pc(\''+k+'\')">'+d+'</button>'}return h+'</div></div>'}
+ for(let d=1;d<=len;d++){const k=y+'-'+p2(m+1)+'-'+p2(d);h+='<button class="d'+(pl.custom.includes(k)?' pk':'')+'"'+(past?' disabled':'')+' onclick="pc(\''+k+'\')">'+d+'</button>'}return h+'</div></div></div>'}
 function planUI(){const pm=pmsg;pmsg=false;
  let h='<div class="seg">'+[['day','nach Tag'],['rhythm','nach Rhythmus'],['custom','individuell']].map(t=>'<button class="pb'+(pl.type===t[0]?' pk':'')+'" onclick="pl.type=\''+t[0]+'\';render()">'+t[1]+'</button>').join('')+'</div>';
  if(pl.type==='day')h+='<div class="wk">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map((n,i)=>'<button class="pb'+(pl.days.includes(i)?' pk':'')+'" onclick="pd('+i+')">'+n+'</button>').join('')+'</div>';
@@ -389,7 +389,7 @@ function initCal(){const e=$('#cv')||$('#av');if(!e)return;let x0=null,y0=null;
  e.onpointerup=ev=>{if(x0===null)return;const dx=ev.clientX-x0,dy=ev.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)mv(dx<0?1:-1)};
  e.onpointercancel=()=>{x0=null}}
 function slide(id,d,fn){const el=$(id);if(!el){fn();return}
- const r=el.getBoundingClientRect(),mr=(id==='#mc'?el.closest('.card'):$('#m')).getBoundingClientRect(),old=el.cloneNode(true);old.removeAttribute('id');fn();const nw=$(id);if(!nw)return;
+ const r=el.getBoundingClientRect(),mr=(id==='#mc'?el.parentElement:$('#m')).getBoundingClientRect(),old=el.cloneNode(true);old.removeAttribute('id');fn();const nw=$(id);if(!nw)return;
  const w=document.createElement('div');w.style.cssText='position:fixed;left:'+mr.left+'px;top:'+mr.top+'px;width:'+mr.width+'px;height:'+mr.height+'px;overflow:hidden;pointer-events:none;z-index:4';
  old.style.cssText+=';position:absolute;left:'+(r.left-mr.left)+'px;top:'+(r.top-mr.top)+'px;width:'+r.width+'px;margin:0';w.appendChild(old);document.body.appendChild(w);
  const o={duration:300,easing:'cubic-bezier(.3,.7,.3,1)'};
