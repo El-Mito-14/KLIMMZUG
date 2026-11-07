@@ -396,6 +396,16 @@ function slide(id,d,fn){const el=$(id);if(!el){fn();return}
  old.animate([{transform:'translateX(0)'},{transform:'translateX('+(-d*mr.width)+'px)'}],{...o,fill:'forwards'}).onfinish=()=>w.remove();
  nw.animate([{transform:'translateX('+(d*mr.width)+'px)'},{transform:'translateX(0)'}],o)}
 function anaW(){const h=anaView(),m=h.match(/^<h1>.*?<\/h1>/);return m?m[0]+'<div id="av" style="flex:1;touch-action:pan-y">'+h.slice(m[0].length)+'</div>':h}
+function goBack(){
+ const dl=$('#dlg');if(dl){dl.remove();return}
+ if(kEl){closePad();return}
+ const vp=$('#vp');if(vp&&vp.style.display==='flex'){vp.style.display='none';return}
+ if(tab==='set'){if(sopen!==''){sopen='';render()}else go(prev);return}
+ if(ed){ed=null;render();return}
+ if(tab!=='train')go('train')}
+let bArm=false;
+document.addEventListener('pointerdown',()=>{if(!bArm){bArm=true;try{history.pushState({s:1},'')}catch(e){}}});
+window.addEventListener('popstate',()=>{try{history.pushState({s:1},'')}catch(e){}goBack()});
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
