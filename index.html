@@ -79,7 +79,7 @@ label.fr{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink
 .fr input{width:96px;flex:none;margin:0;text-align:center;font-size:18px}
 .np{cursor:pointer;color:var(--red);font-weight:700}input.np.act{border-color:var(--red)}
 #kp{position:fixed;inset:0;z-index:30;display:none}#kp .kb{position:absolute;inset:0;background:#0006}
-.ks{position:absolute;left:50%;transform:translateX(-50%);width:min(88vw,320px);bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);border:1.5px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 8px 28px #0004}
+.ks{position:absolute;left:50%;transform:translateX(-50%);width:min(70vw,250px);bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);border:1.5px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 8px 28px #0004}
 .kd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding:0 4px}.kd span{color:var(--mut);font-size:14px}.kd b{font-size:30px;color:var(--red)}
 .kg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kg button{height:52px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font-size:24px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0}.kg button:active{background:var(--red);border-color:var(--red);color:#fff}
 body.kp main{padding-bottom:390px}
@@ -92,7 +92,7 @@ body.kp main{padding-bottom:390px}
 </head><body>
 <button id="vol" onclick="tv()" aria-label="Lautstärke"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path id="w1" d="M16 9a4 4 0 0 1 0 6"/><path id="w2" d="M18.5 6.5a8 8 0 0 1 0 11"/><path id="wx" d="M16 9l5 6M21 9l-5 6"/></svg></button><div id="vp"><input id="vs" type="range" min="0" max="100"></div>
 <button id="home" onclick="home()" aria-label="Startbildschirm"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z"/></svg></button>
-<button id="gear" onclick="go('set')" aria-label="Einstellungen"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-width="3" stroke-dasharray="3.5 3.5"/><circle cx="12" cy="12" r="6.3"/><circle cx="12" cy="12" r="2.3"/></svg></button>
+<button id="gear" onclick="go('set')" aria-label="Einstellungen"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.84 5.34 L9.96 2.41 L14.04 2.41 L14.16 5.34 L16.68 6.80 L19.28 5.44 L21.32 8.97 L18.85 10.54 L18.85 13.46 L21.32 15.03 L19.28 18.56 L16.68 17.20 L14.16 18.66 L14.04 21.59 L9.96 21.59 L9.84 18.66 L7.32 17.20 L4.72 18.56 L2.68 15.03 L5.15 13.46 L5.15 10.54 L2.68 8.97 L4.72 5.44 L7.32 6.80Z"/><circle cx="12" cy="12" r="2.8"/></svg></button>
 <main id="m"></main>
 <nav><button id="n1" onclick="go('train')">Training</button><button id="n2" onclick="go('cal')">Kalender</button><button id="n3" onclick="go('ana')">Analyse</button><button id="n4" onclick="go('game')">Minigame</button></nav>
 <script>
