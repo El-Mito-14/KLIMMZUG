@@ -85,6 +85,7 @@ label.fr{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--ink
 body.kp main{padding-bottom:390px}
 .iw{position:relative;flex:none;width:106px}.iw input{width:100%;padding-right:46px;text-align:right}
 .iw em{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--mut);font-size:15px;pointer-events:none}
+main{overflow-x:hidden}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -169,7 +170,7 @@ function calView(){if(ed)return editView();
  if(sel){const l=all.filter(s=>s.date===sel);h+=l.length?l.map(s=>summary(s)+'<button class="btn alt" onclick="edit('+s.id+')">Bearbeiten</button><button class="btn ghost" onclick="del('+s.id+')">Löschen</button>').join('<hr>'):'<p class="sub" style="margin-top:20px">'+(isPlanned(sel,P)?'Für diesen Tag ist ein Training geplant.':'Kein Training an diesem Tag.')+'</p>'}
  else h+='<p class="sub" style="margin-top:20px">Tippe auf einen Tag mit Punkt für die Auswertung.</p>';
  return '<div id="cv" style="flex:1;touch-action:pan-y">'+h+'</div>'}
-function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;render()}
+function mv(d){cal.m+=d;if(cal.m<0){cal.m=11;cal.y--}if(cal.m>11){cal.m=0;cal.y++}sel=null;slide('#cv',d,render)}
 function pick(k){sel=sel===k?null:k;render()}
 function render(){closePad();$('#n1').className=tab==='train'?'on':'';$('#n2').className=tab==='cal'?'on':'';$('#n3').className=tab==='ana'?'on':'';$('#n4').className=tab==='game'?'on':'';$('nav').style.display=(tab==='train'&&S.phase==='splash')?'none':'flex';$('#gear').style.display=tab==='set'?'none':'flex';$('#home').style.display=(tab==='set'||(tab==='train'&&S.phase==='splash'))?'none':'flex';{const on=tab!=='set'&&!(tab==='train'&&S.phase==='splash');$('#vol').style.display=on?'flex':'none';if(!on)$('#vp').style.display='none'}
  const m=$('#m'),keep=m.scrollTop;m.innerHTML=({train:view,cal:calView,ana:anaView,set:setView,game:gameView})[tab]();if(tab==='train'&&S.phase==='splash')initSplash();if(tab==='set')initRing();initMc();initCal();if(tab==='game')initGame();tr(m);tr($('nav'));m.scrollTop=keep;if(tab==='train'&&S.end&&(S.phase==='warm'||S.phase==='set'||S.phase==='cool'))tick()}
@@ -345,7 +346,7 @@ function savePlan(){ls.set('kt_plan',{type:pl.type,start:key(new Date()),days:[.
 function delPlan(){ls.set('kt_plan',null);pl={type:'day',days:[],every:3,custom:[]};render()}
 let pmv=null;
 function cmv(){if(!pmv){const n=new Date();pmv={y:n.getFullYear(),m:n.getMonth()}}return pmv}
-function vm(d){const v=cmv();let m=v.m+d,y=v.y;if(m<0){m=11;y--}if(m>11){m=0;y++}pmv={y,m};render()}
+function vm(d){const v=cmv();let m=v.m+d,y=v.y;if(m<0){m=11;y--}if(m>11){m=0;y++}pmv={y,m};slide('#mc',d,render)}
 function initMc(){const e=$('#mc');if(!e)return;let x0=null,y0=null;
  e.onpointerdown=ev=>{x0=ev.clientX;y0=ev.clientY};
  e.onpointerup=ev=>{if(x0===null)return;const dx=ev.clientX-x0,dy=ev.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)vm(dx<0?1:-1)};
@@ -386,6 +387,13 @@ function initCal(){const e=$('#cv');if(!e)return;let x0=null,y0=null;
  e.onpointerdown=ev=>{x0=ev.clientX;y0=ev.clientY};
  e.onpointerup=ev=>{if(x0===null)return;const dx=ev.clientX-x0,dy=ev.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)mv(dx<0?1:-1)};
  e.onpointercancel=()=>{x0=null}}
+function slide(id,d,fn){const el=$(id);if(!el){fn();return}
+ const r=el.getBoundingClientRect(),mr=$('#m').getBoundingClientRect(),old=el.cloneNode(true);old.removeAttribute('id');fn();const nw=$(id);if(!nw)return;
+ const w=document.createElement('div');w.style.cssText='position:fixed;left:'+mr.left+'px;top:'+mr.top+'px;width:'+mr.width+'px;height:'+mr.height+'px;overflow:hidden;pointer-events:none;z-index:4';
+ old.style.cssText+=';position:absolute;left:'+(r.left-mr.left)+'px;top:'+(r.top-mr.top)+'px;width:'+r.width+'px;margin:0';w.appendChild(old);document.body.appendChild(w);
+ const o={duration:300,easing:'cubic-bezier(.3,.7,.3,1)'};
+ old.animate([{transform:'translateX(0)'},{transform:'translateX('+(-d*mr.width)+'px)'}],{...o,fill:'forwards'}).onfinish=()=>w.remove();
+ nw.animate([{transform:'translateX('+(d*mr.width)+'px)'},{transform:'translateX(0)'}],o)}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
