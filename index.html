@@ -87,6 +87,7 @@ body.kp main{padding-bottom:390px}
 .iw em{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--mut);font-size:15px;pointer-events:none}
 main{overflow-x:hidden}
 .card{flex-shrink:0}
+.tt{position:fixed;left:20px;right:20px;bottom:90px;z-index:40;background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;text-align:center;font-size:15px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -193,7 +194,7 @@ function setView(){const acc=(k,t,b)=>'<div class="card" style="padding:0 14px">
  const lg=['de','en','es','it','fr','th'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
  const pf='<label style="margin:0">Name<input value="'+esc(ui.name||'')+'" maxlength="30" autocomplete="off" oninput="ui.name=this.value.trim();applyUI()"></label>';
  const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><button class="pl" onclick="go(prev)">Fertig</button></div></div>';
- return '<h1>Einstellungen</h1>'+acc('prof','Profil',pf)+acc('plan','Trainingsplan',planUI())+acc('lang','Sprache',lg)+acc('des','Design',ds)+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
+ return '<h1>Einstellungen</h1>'+acc('prof','Profil',pf)+acc('plan','Trainingsplan',planUI())+acc('lang','Sprache',lg)+acc('des','Design',ds)+acc('data','Daten',dataUI())+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
 function initRing(){const w=$('#hw');if(!w)return;const mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
  const mvr=e=>{const b=w.getBoundingClientRect();ui.hue=Math.round((Math.atan2(e.clientX-b.left-b.width/2,-(e.clientY-b.top-b.height/2))*180/Math.PI+360)%360);applyUI();mk()};
  w.onpointerdown=e=>{if(e.target.closest('.pl'))return;const b=w.getBoundingClientRect();if(Math.hypot(e.clientX-b.left-b.width/2,e.clientY-b.top-b.height/2)<b.width*.28)return;w.setPointerCapture(e.pointerId);d=1;mvr(e)};w.onpointermove=e=>{if(d)mvr(e)};w.onpointerup=()=>d=0}
@@ -222,7 +223,7 @@ let off=ls.get('kt_off',[]),showG=false;
 function tg(k){const i=off.indexOf(k);if(i>=0)off.splice(i,1);else if(off.length<6)off.push(k);ls.set('kt_off',off);render()}
 function gripPanel(){return showG?'<div class="card" style="margin-top:14px">'+[1,2,3,4,5,6,7].map(k=>'<button class="gp'+(off.includes(k)?' x':'')+'" onclick="tg('+k+')">'+GRIPS[k]+'</button>').join('')+'<div class="mut" style="margin-top:8px">Antippen zum Streichen oder Zurückholen</div></div>':''}
 const PAUSE='<svg viewBox="0 0 24 24" width="72" height="72"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>';
-function ask(t,m,ok,fn,no){const d=document.createElement('div');d.id='dlg';d.innerHTML='<div class="dg"><h2>'+t+'</h2><p>'+m+'</p><div class="dgb"><button class="btn alt" id="dn">'+(no||'Abbrechen')+'</button><button class="btn" id="dy">'+ok+'</button></div></div>';document.body.appendChild(d);tr(d);d.querySelector('#dn').onclick=()=>d.remove();d.querySelector('#dy').onclick=()=>{d.remove();fn()}}
+function ask(t,m,ok,fn,no){const d=document.createElement('div');d.id='dlg';d.innerHTML='<div class="dg"><h2>'+t+'</h2><p>'+m+'</p><div class="dgb">'+(no===false?'':'<button class="btn alt" id="dn">'+(no||'Abbrechen')+'</button>')+'<button class="btn" id="dy">'+ok+'</button></div></div>';document.body.appendChild(d);tr(d);if(d.querySelector('#dn'))d.querySelector('#dn').onclick=()=>d.remove();d.querySelector('#dy').onclick=()=>{d.remove();fn()}}
 function home(){const go_=()=>{clearInterval(timer);try{wl&&wl.release()}catch(e){}ed=null;showG=false;S={phase:'splash'};tab='train';render()};
  if(['warm','order','set','push','cool'].includes(S.phase))ask('Training beenden?','Du kehrst zum Startbildschirm zurück. Der Fortschritt dieses Trainings geht verloren.','Beenden',go_,'Weiter trainieren');else go_()}
 
@@ -300,7 +301,16 @@ const TR=[
 `Als Nächstes|Up next|A continuación|Prossimo|Ensuite|ถัดไป`,
 `Körpergewicht|Body weight|Peso corporal|Peso corporeo|Poids du corps|น้ำหนักตัว`,`Zusatzgewicht|Extra weight|Peso extra|Peso aggiuntivo|Poids additionnel|น้ำหนักเพิ่ม`,
 `Dauer Seilspringen|Jump rope duration|Duración de la comba|Durata corda|Durée corde à sauter|เวลากระโดดเชือก`,`Dauer pro Satz|Duration per set|Duración por serie|Durata per serie|Durée par série|เวลาต่อเซต`,
-`kg|kg|kg|kg|kg|กก.`,`min|min|min|min|min|นาที`].map(r=>r.split('|'));
+`kg|kg|kg|kg|kg|กก.`,`min|min|min|min|min|นาที`,
+`App beenden?|Exit app?|¿Cerrar la app?|Chiudere l'app?|Quitter l'application ?|ออกจากแอป?`,
+`Willst du die App wirklich beenden?|Do you really want to exit the app?|¿Seguro que quieres cerrar la app?|Vuoi davvero chiudere l'app?|Veux-tu vraiment quitter l'application ?|คุณต้องการออกจากแอปจริง ๆ หรือไม่?`,
+`Tippe noch einmal auf Zurück, um die App zu schließen.|Tap Back once more to close the app.|Pulsa Atrás una vez más para cerrar la app.|Tocca Indietro ancora una volta per chiudere l'app.|Appuie encore une fois sur Retour pour fermer l'application.|แตะย้อนกลับอีกครั้งเพื่อปิดแอป`,
+`Daten|Data|Datos|Dati|Données|ข้อมูล`,`Daten sichern|Back up data|Guardar copia de seguridad|Salva backup|Sauvegarder les données|สำรองข้อมูล`,`Daten wiederherstellen|Restore data|Restaurar datos|Ripristina dati|Restaurer les données|กู้คืนข้อมูล`,
+`Sichert Trainings, Plan und Einstellungen in einer Datei, zum Beispiel vor einer Neuinstallation.|Saves trainings, plan and settings in one file, for example before a reinstall.|Guarda entrenamientos, plan y ajustes en un archivo, por ejemplo antes de reinstalar.|Salva allenamenti, piano e impostazioni in un file, ad esempio prima di reinstallare.|Enregistre entraînements, plan et réglages dans un fichier, par exemple avant une réinstallation.|บันทึกการฝึก แผน และการตั้งค่าไว้ในไฟล์เดียว เช่น ก่อนติดตั้งแอปใหม่`,
+`Speicher ist dauerhaft geschützt.|Storage is protected permanently.|El almacenamiento está protegido de forma permanente.|La memoria è protetta in modo permanente.|Le stockage est protégé durablement.|พื้นที่เก็บข้อมูลได้รับการป้องกันถาวร`,
+`Wiederhergestellt|Restored|Restaurado|Ripristinato|Restauré|กู้คืนแล้ว`,`{0} Trainings geladen.|{0} trainings loaded.|{0} entrenamientos cargados.|{0} allenamenti caricati.|{0} entraînements chargés.|โหลด {0} การฝึกแล้ว`,
+`Datei ungültig|Invalid file|Archivo no válido|File non valido|Fichier invalide|ไฟล์ไม่ถูกต้อง`,
+`Das ist keine Sicherungsdatei dieser App.|This is not a backup file of this app.|Este no es un archivo de copia de esta app.|Questo non è un file di backup di questa app.|Ce n'est pas un fichier de sauvegarde de cette application.|นี่ไม่ใช่ไฟล์สำรองของแอปนี้`].map(r=>r.split('|'));
 const LG=['de','en','es','it','fr','th'],KM=new Map(TR.map((r,i)=>[r[0],i])),RX=TR.map((r,i)=>r[0].includes('{')?[new RegExp('^'+r[0].replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\d\}/g,'(.+?)')+'$'),i]:0).filter(Boolean);
 function tx(s){const l=ui.lang;if(l==='de')return s;const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2],k=LG.indexOf(l);
  if(KM.has(c))return m[1]+TR[KM.get(c)][k]+m[3];
@@ -402,10 +412,27 @@ function goBack(){
  const vp=$('#vp');if(vp&&vp.style.display==='flex'){vp.style.display='none';return}
  if(tab==='set'){if(sopen!==''){sopen='';render()}else go(prev);return}
  if(ed){ed=null;render();return}
- if(tab!=='train')go('train')}
-let bArm=false;
-document.addEventListener('pointerdown',()=>{if(!bArm){bArm=true;try{history.pushState({s:1},'')}catch(e){}}});
-window.addEventListener('popstate',()=>{try{history.pushState({s:1},'')}catch(e){}goBack()});
+ if(tab!=='train')go('train');else ask('App beenden?','Willst du die App wirklich beenden?','Beenden',exitApp,'Abbrechen')}
+let bpos=0,bOff=false;
+function bfill(){if(bOff||bpos>=6)return;for(let i=0;i<12;i++){try{history.pushState({s:1},'')}catch(e){}}bpos+=12}
+document.addEventListener('pointerup',bfill);
+window.addEventListener('popstate',()=>{if(bOff)return;if(bpos>0)bpos--;bfill();goBack()});
+function toast(t){const e=document.createElement('div');e.className='tt';e.textContent=t;document.body.appendChild(e);tr(e);setTimeout(()=>e.remove(),4500)}
+function exitApp(){bOff=true;const n=bpos;bpos=0;if(n>0)history.go(-n);setTimeout(()=>{try{window.close()}catch(e){}},400);setTimeout(()=>toast('Tippe noch einmal auf Zurück, um die App zu schließen.'),900)}
+let persisted=false;
+try{if(navigator.storage&&navigator.storage.persisted)navigator.storage.persisted().then(p=>{persisted=p;if(!p&&navigator.storage.persist)return navigator.storage.persist().then(q=>{persisted=q})})}catch(e){}
+function dataUI(){return '<div class="mut" style="margin-bottom:12px">Sichert Trainings, Plan und Einstellungen in einer Datei, zum Beispiel vor einer Neuinstallation.</div><button class="btn alt" style="margin-top:0" onclick="backup()">Daten sichern</button><button class="btn alt" onclick="restore()">Daten wiederherstellen</button>'+(persisted?'<div class="mut" style="margin-top:12px">Speicher ist dauerhaft geschützt.</div>':'')}
+async function backup(){const o={app:'klimmzug',v:1,date:new Date().toISOString(),data:{}};
+ ['kt_sessions','kt_cfg','kt_ui','kt_hs','kt_off','kt_plan'].forEach(k=>{const v=ls.get(k,undefined);if(v!==undefined&&v!==null)o.data[k]=v});
+ const name='klimmzug-backup-'+key(new Date())+'.json',blob=new Blob([JSON.stringify(o)],{type:'application/json'}),f=new File([blob],name,{type:'application/json'});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}}catch(e){if(e&&e.name==='AbortError')return}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+function restore(){let i=$('#imp');if(!i){i=document.createElement('input');i.type='file';i.id='imp';i.accept='.json,application/json';i.style.display='none';document.body.appendChild(i);
+ i.onchange=()=>{const f=i.files[0];i.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.app!=='klimmzug'||!o.data)throw 0;
+  const cur=ls.get('kt_sessions',[]),inc=o.data.kt_sessions||[],ids=new Set(cur.map(s=>s.id));inc.forEach(s=>{if(!ids.has(s.id))cur.push(s)});
+  Object.keys(o.data).forEach(k=>{if(k!=='kt_sessions')ls.set(k,o.data[k])});ls.set('kt_sessions',cur);
+  ask('Wiederhergestellt',inc.length+' Trainings geladen.','OK',()=>location.reload(),false)}catch(e){ask('Datei ungültig','Das ist keine Sicherungsdatei dieser App.','OK',()=>{},false)}};r.readAsText(f)}}
+ i.click()}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
