@@ -424,10 +424,10 @@ try{if(navigator.storage&&navigator.storage.persisted)navigator.storage.persiste
 function dataUI(){return '<div class="mut" style="margin-bottom:12px">Sichert Trainings, Plan und Einstellungen in einer Datei, zum Beispiel vor einer Neuinstallation.</div><button class="btn alt" style="margin-top:0" onclick="backup()">Daten sichern</button><button class="btn alt" onclick="restore()">Daten wiederherstellen</button>'+(persisted?'<div class="mut" style="margin-top:12px">Speicher ist dauerhaft geschützt.</div>':'')}
 async function backup(){const o={app:'klimmzug',v:1,date:new Date().toISOString(),data:{}};
  ['kt_sessions','kt_cfg','kt_ui','kt_hs','kt_off','kt_plan'].forEach(k=>{const v=ls.get(k,undefined);if(v!==undefined&&v!==null)o.data[k]=v});
- const name='klimmzug-backup-'+key(new Date())+'.json',blob=new Blob([JSON.stringify(o)],{type:'application/json'}),f=new File([blob],name,{type:'application/json'});
+ const name='klimmzug-backup-'+key(new Date())+'.txt',blob=new Blob([JSON.stringify(o)],{type:'text/plain'}),f=new File([blob],name,{type:'text/plain'});
  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}}catch(e){if(e&&e.name==='AbortError')return}
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
-function restore(){let i=$('#imp');if(!i){i=document.createElement('input');i.type='file';i.id='imp';i.accept='.json,application/json';i.style.display='none';document.body.appendChild(i);
+function restore(){let i=$('#imp');if(!i){i=document.createElement('input');i.type='file';i.id='imp';i.accept='.txt,.json,text/plain,application/json';i.style.display='none';document.body.appendChild(i);
  i.onchange=()=>{const f=i.files[0];i.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.app!=='klimmzug'||!o.data)throw 0;
   const cur=ls.get('kt_sessions',[]),inc=o.data.kt_sessions||[],ids=new Set(cur.map(s=>s.id));inc.forEach(s=>{if(!ids.has(s.id))cur.push(s)});
   Object.keys(o.data).forEach(k=>{if(k!=='kt_sessions')ls.set(k,o.data[k])});ls.set('kt_sessions',cur);
