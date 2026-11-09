@@ -88,6 +88,13 @@ body.kp main{padding-bottom:390px}
 main{overflow-x:hidden}
 .card{flex-shrink:0}
 .tt{position:fixed;left:20px;right:20px;bottom:90px;z-index:40;background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;text-align:center;font-size:15px}
+#kk{position:fixed;inset:0;z-index:30;display:none}#kk .kb{position:absolute;inset:0;background:#0006}
+.kr{display:flex;gap:5px;margin-bottom:6px}
+.kr button{flex:1;min-width:0;height:46px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:19px;font-weight:600;padding:0;display:flex;align-items:center;justify-content:center}
+.kr.th button{height:38px;font-size:17px;border-radius:8px}
+.kr button.w{flex:1.5}.kr button.sp{flex:5}
+.kr button:active,.kr button.on{background:var(--red);border-color:var(--red);color:#fff}
+body.kp2 main{padding-bottom:540px}
 </style><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-192.png">
@@ -192,7 +199,7 @@ function flag(l){const s={de:'<rect width="3" height="2"/><rect y=".667" width="
 function setLang(l){ui.lang=l;applyLang();applyUI();render()}
 function setView(){const acc=(k,t,b)=>'<div class="card" style="padding:0 14px"><button class="ah" onclick="sopen=sopen===\''+k+'\'?\'\':\''+k+'\';render()"><span>'+t+'</span><span style="transform:rotate('+(sopen===k?90:0)+'deg)">›</span></button>'+(sopen===k?'<div style="padding:0 0 14px">'+b+'</div>':'')+'</div>';
  const lg=['de','en','es','it','fr','th'].map(l=>'<button class="lr'+(ui.lang===l?' on':'')+'" onclick="setLang(\''+l+'\')"><span class="fl">'+flag(l)+'</span><span>'+NAMES[l]+'</span><span style="margin-left:auto">'+(ui.lang===l?'✓':'')+'</span></button>').join('');
- const pf='<label style="margin:0">Name<input value="'+esc(ui.name||'')+'" maxlength="30" autocomplete="off" oninput="ui.name=this.value.trim();applyUI()"></label>';
+ const pf='<label style="margin:0">Name<input class="np" data-np="t" readonly inputmode="none" value="'+esc(ui.name||'')+'" oninput="ui.name=this.value.trim();applyUI()"></label>';
  const ds='<button class="btn alt" onclick="ui.dark=!ui.dark;applyUI();render()">'+(ui.dark?'Zum hellen Modus wechseln':'Zum Darkmode wechseln')+'</button><div style="margin-top:18px"><b>Akzentfarbe</b></div><div class="mut">Mit dem Finger über den Ring fahren</div><div class="hw" id="hw"><div class="hg"></div><i id="hm"></i><div class="hc"><button class="pl" onclick="go(prev)">Fertig</button></div></div>';
  return '<h1>Einstellungen</h1>'+acc('prof','Profil',pf)+acc('plan','Trainingsplan',planUI())+acc('lang','Sprache',lg)+acc('des','Design',ds)+acc('data','Daten',dataUI())+(sopen==='des'?'':'<button class="btn" onclick="go(prev)">Fertig</button>')}
 function initRing(){const w=$('#hw');if(!w)return;const mk=()=>{const a=ui.hue*Math.PI/180,m=$('#hm');m.style.left=50+39.7*Math.sin(a)+'%';m.style.top=50-39.7*Math.cos(a)+'%'};mk();let d=0;
@@ -386,10 +393,10 @@ let kEl=null,kFresh=false;
 const dc=()=>['de','es','it','fr'].includes(ui.lang)?',':'.';
 document.body.insertAdjacentHTML('beforeend','<div id="kp"><div class="kb" onclick="closePad()"></div><div class="ks"><div class="kd"><span id="kl"></span><b id="kv"></b></div><div class="kg">'+['1','2','3','4','5','6','7','8','9'].map(n=>'<button onclick="kp(\''+n+'\')">'+n+'</button>').join('')+'<button id="kdot" onclick="kp(\',\')"></button><button onclick="kp(\'0\')">0</button><button onclick="kp(\'<\')" aria-label="Delete"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12z"/><path d="M13 9l4 6M17 9l-4 6"/></svg></button></div><button class="btn" onclick="closePad()">OK</button></div></div>');
 function kShow(){const v=kEl.value;$('#kv').textContent=(v===''?'0':v).replace('.',dc())}
-function openPad(el){kEl=el;kFresh=true;document.querySelectorAll('input.act').forEach(i=>i.classList.remove('act'));el.classList.add('act');
+function openPad(el){if(el.dataset.np==='t'){openKb(el);return}kEl=el;kFresh=true;document.querySelectorAll('input.act').forEach(i=>i.classList.remove('act'));el.classList.add('act');
  const lb=el.closest('label');$('#kl').textContent=lb?lb.innerText.trim().split('\n')[0]:'';$('#kdot').textContent=dc();$('#kdot').style.visibility=el.dataset.np==='d'?'visible':'hidden';
  document.body.classList.add('kp');$('#kp').style.display='block';kShow();setTimeout(()=>el.scrollIntoView({block:'center',behavior:'smooth'}),60)}
-function closePad(){if(kEl)kEl.classList.remove('act');kEl=null;$('#kp').style.display='none';document.body.classList.remove('kp')}
+function closePad(){if(kEl)kEl.classList.remove('act');kEl=null;$('#kp').style.display='none';document.body.classList.remove('kp');$('#kk').style.display='none';document.body.classList.remove('kp2')}
 function kp(k){if(!kEl)return;let v=kFresh&&k!=='<'?'':kEl.value;kFresh=false;
  if(k==='<')v=v.slice(0,-1);else if(k===','){if(v.includes('.'))return;v=(v===''?'0':v)+'.'}else{if(v==='0')v='';if(v.length>=6)return;v+=k}
  kEl.value=v;kEl.dispatchEvent(new Event('input',{bubbles:true}));kShow()}
@@ -433,6 +440,24 @@ function restore(){let i=$('#imp');if(!i){i=document.createElement('input');i.ty
   Object.keys(o.data).forEach(k=>{if(k!=='kt_sessions')ls.set(k,o.data[k])});ls.set('kt_sessions',cur);
   ask('Wiederhergestellt',inc.length+' Trainings geladen.','OK',()=>location.reload(),false)}catch(e){ask('Datei ungültig','Das ist keine Sicherungsdatei dieser App.','OK',()=>{},false)}};r.readAsText(f)}}
  i.click()}
+document.body.insertAdjacentHTML('beforeend','<div id="kk"><div class="kb" onclick="closePad()"></div><div class="ks"><div class="kd"><span id="kl2"></span><b id="kv2" style="font-size:22px;text-align:right;word-break:break-all"></b></div><div id="kkg"></div><button class="btn" onclick="closePad()">OK</button></div></div>');
+const LAT={de:['qwertzuiop','asdfghjkl','yxcvbnm'],fr:['azertyuiop','qsdfghjklm','wxcvbn'],en:['qwertyuiop','asdfghjkl','zxcvbnm']};
+const ACC=['äöüßéèêëàâ','áçñíîïóôúû',"åæøœýÿ'-."],THC='กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ',THV='ะัาำิีึืุูเแโใไๅ็่้๊๋์';
+let kbP='L',kbS=false;
+function openKb(el){kEl=el;document.querySelectorAll('input.act').forEach(i=>i.classList.remove('act'));el.classList.add('act');kbP=ui.lang==='th'?'T':'L';kbS=false;
+ const lb=el.closest('label');$('#kl2').textContent=lb?lb.innerText.trim().split('\n')[0]:'';$('#kp').style.display='none';document.body.classList.remove('kp');
+ $('#kk').style.display='block';document.body.classList.add('kp2');kbDraw();setTimeout(()=>el.scrollIntoView({block:'center',behavior:'smooth'}),60)}
+function kbDraw(){if(!kEl)return;const v=kEl.value,up=kbS||v===''||/[\s-]$/.test(v),g=$('#kkg');g.innerHTML='';
+ const row=(a,cls)=>{const r=document.createElement('div');r.className='kr'+(cls?' '+cls:'');a.forEach(x=>{const b=document.createElement('button');b.textContent=x.t;if(x.c)b.className=x.c;b.onclick=()=>kk(x.k);r.appendChild(b)});g.appendChild(r)};
+ const ch=c=>{const u=up&&c!=='ß'?c.toLocaleUpperCase():c;return{t:u,k:u}},sh={t:'⇧',k:'shift',c:'w'+(kbS?' on':'')},bk={t:'⌫',k:'back',c:'w'},sp={t:'␣',k:' ',c:'sp'};
+ if(kbP==='T'){const A=Array.from(THC+THV),mk=c=>({t:/[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/.test(c)?'◌'+c:c,k:c});for(let i=0;i<A.length;i+=11)row(A.slice(i,i+11).map(mk),'th');row([{t:'ABC',k:'p:L',c:'w'},{t:'äé',k:'p:S',c:'w'},sp,bk],'th')}
+ else if(kbP==='S'){row(Array.from(ACC[0]).map(ch));row(Array.from(ACC[1]).map(ch));row([sh,...Array.from(ACC[2]).map(ch),bk]);row([{t:'ABC',k:'p:L',c:'w'},{t:'ก',k:'p:T',c:'w'},sp])}
+ else{const L=LAT[ui.lang]||LAT.en;row(Array.from(L[0]).map(ch));row(Array.from(L[1]).map(ch));row([sh,...Array.from(L[2]).map(ch),bk]);row([{t:'äé',k:'p:S',c:'w'},{t:'ก',k:'p:T',c:'w'},sp])}
+ $('#kv2').innerHTML=esc(v)+'<span style="opacity:.35">|</span>'}
+function kk(k){if(!kEl)return;let v=kEl.value;
+ if(k==='shift')kbS=!kbS;else if(k.length===3&&k.slice(0,2)==='p:')kbP=k[2];else if(k==='back')v=Array.from(v).slice(0,-1).join('');
+ else{if(k===' '&&(v===''||v.endsWith(' ')))return;if(v.length>=30)return;v+=k;kbS=false}
+ if(v!==kEl.value){kEl.value=v;kEl.dispatchEvent(new Event('input',{bubbles:true}))}kbDraw()}
 applyUI();render();
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
 </body></html>
